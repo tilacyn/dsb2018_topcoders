@@ -10,7 +10,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 from aug.transforms import aug_mega_hardcore
 
 from keras.losses import binary_crossentropy
-from keras.utils.training_utils import multi_gpu_model
+from keras.utils import multi_gpu_model
 
 from datasets.dsb_binary import DSB2018BinaryDataset
 from models.model_factory import make_model
