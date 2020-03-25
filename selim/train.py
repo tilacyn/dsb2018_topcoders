@@ -21,6 +21,8 @@ from keras.optimizers import RMSprop, Adam, SGD
 
 from losses import make_loss, hard_dice_coef, hard_dice_coef_ch1
 
+from tensorflow.python.client import device_lib
+
 import keras.backend as K
 
 
@@ -33,7 +35,7 @@ class ModelCheckpointMGPU(ModelCheckpoint):
         self.model = self.original_model
         super().on_epoch_end(epoch, logs)
 
-gpus = [x.name for x in K.device_lib.list_local_devices() if x.name[:4] == '/gpu']
+gpus = [x.name for x in device_lib.list_local_devices() if x.name[:4] == '/gpu']
 
 def freeze_model(model, freeze_before_layer):
     if freeze_before_layer == "ALL":
