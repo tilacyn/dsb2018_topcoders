@@ -100,7 +100,7 @@ class LIDCDatasetIterator(Iterator):
     def __init__(self, image_dir, batch_size):
         seed = np.uint32(time.time() * 1000)
         n = len(os.listdir(image_dir))
-        self.image_name_template = image_dir + '/{}.dcm'
+        self.image_name_template = image_dir + '/{}'
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
         self.nodules = parseXML(self.image_dir)
