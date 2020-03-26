@@ -8,7 +8,7 @@ import pydicom as dicom
 
 
 def make_mask(image, image_id, nodules):
-    height, width, depth = image.shape
+    height, width = image.shape
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
     for nodule in nodules:
