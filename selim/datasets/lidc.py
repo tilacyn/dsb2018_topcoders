@@ -16,7 +16,7 @@ def make_mask(image, image_id, nodules):
         print(nodule)
         for roi in nodule['roi']:
             print(roi)
-            if roi['sop_uid'] == image_id:
+            if roi['sop_uid'] != image_id:
                 edgeMap = roi['xy']
                 break
 
