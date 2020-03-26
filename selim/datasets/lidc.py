@@ -15,7 +15,7 @@ def make_mask(image, image_id, nodules):
     for nodule in nodules[:1]:
         print(nodule)
         for roi in nodule['roi']:
-            # print(roi)
+            print(roi)
             if roi['sop_uid'] == image_id:
                 edgeMap = roi['xy']
                 break
@@ -119,9 +119,9 @@ class LIDCDatasetIterator(Iterator):
             image_name = self.image_name_template.format(self.image_ids[image_index])
             image, dcm_ds = imread(image_name)
             nodules = parseXML(self.image_dir)
-
+            print('processing image: {}'.format(image_name))
             batch_x.append(image)
-            batch_y.append(make_mask(image, dcm_ds.data_element('UID'), nodules))
+            batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
         return batch_x, batch_y
