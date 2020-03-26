@@ -240,7 +240,7 @@ def xception_fpn(input_shape, channels=1, activation="sigmoid"):
         x = Conv2D(channels, (1, 1), activation=activation, name=name)(x)
     else:
         x = Conv2D(channels, (1, 1), activation=activation, name="mask")(x)
-    model = Model(xception.input, x)
+    model = Model(inputs=xception.input, outputs=x)
     return model
 
 
