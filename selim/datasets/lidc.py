@@ -44,7 +44,7 @@ def imread(image_path):
 
     ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
-    return img_2d_scaled
+    return img_2d_scaled, ds
 
 
 def parseXML(scan_path):
@@ -61,15 +61,15 @@ def parseXML(scan_path):
         if file.split('.')[1] == 'xml':
             xml_file = file
             break
-    prefix = "{http://www.nih.gov/idri}"
+    prefix = "{http://www.nih.gov}"
     tree = ET.parse(scan_path + '/' + xml_file)
     root = tree.getroot()
-    readingSession_list = root.findall(prefix + "CXRreadingSession")
+    readingSession_list = root.findall(prefix + "readingSession")
     nodules = []
 
     for session in readingSession_list:
         # print(session)
-        unblinded_list = session.findall(prefix + "unblindedRead")
+        unblinded_list = session.findall(prefix + "unblindedReadNodule")
         print(unblinded_list)
         for unblinded in unblinded_list:
             nodule_id = unblinded.find(prefix + "noduleID").text
@@ -111,11 +111,11 @@ class LIDCDatasetIterator(Iterator):
         batch_y = []
         for image_index in index_array:
             image_name = self.image_name_template.format(self.image_ids[image_index])
-            image = imread(image_name)
+            image, dcm_ds = imread(image_name)
             nodules = parseXML(self.image_dir)
 
             batch_x.append(image)
-            batch_y.append(make_mask(image_name, nodules[0]['roi']))
+            batch_y.append(make_mask(image_name, dcm_ds.data_element('UID'), nodules[0]['roi']))
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
         return batch_x, batch_y
