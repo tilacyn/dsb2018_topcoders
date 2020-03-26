@@ -123,6 +123,6 @@ class LIDCDatasetIterator(Iterator):
     def create_image_ids(self):
         dcms = filter(lambda name: name.endswith('.dcm'), os.listdir(self.image_dir))
         image_ids = {}
-        for dcm, i in enumerate(dcms):
+        for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
