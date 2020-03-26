@@ -1,7 +1,7 @@
 from tensorflow.keras import Model, Input
-from keras.applications import DenseNet169
-from keras.layers import UpSampling2D, Conv2D, BatchNormalization, Activation, concatenate, Add
-from keras.utils import get_file
+from tensorflow.keras.applications import DenseNet169
+from tensorflow.keras.layers import UpSampling2D, Conv2D, BatchNormalization, Activation, concatenate, Add
+from tensorflow.keras.utils import get_file
 
 from models.xception_padding import Xception
 from resnets import ResNet101, ResNet152, ResNet50

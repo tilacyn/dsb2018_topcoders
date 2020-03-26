@@ -9,21 +9,21 @@ os.environ['CUDA_VISIBLE_DEVICES'] = args_set.gpu
 
 from aug.transforms import aug_mega_hardcore
 
-from keras.losses import binary_crossentropy
-from keras.utils import multi_gpu_model
+from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.utils import multi_gpu_model
 
 from datasets.lidc import LIDCDatasetIterator
 from models.model_factory import make_model
 
 
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
-from keras.optimizers import RMSprop, Adam, SGD
+from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
+from tensorflow.keras.optimizers import RMSprop, Adam, SGD
 
 from losses import make_loss, hard_dice_coef, hard_dice_coef_ch1
 
 from tensorflow.python.client import device_lib
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 
 
 class ModelCheckpointMGPU(ModelCheckpoint):
