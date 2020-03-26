@@ -15,7 +15,7 @@ def make_mask(image, image_id, nodules):
     for nodule in nodules[:1]:
         print(nodule)
         for roi in nodule['roi']:
-            print(roi)
+            # print(roi)
             if roi['sop_uid'] == image_id:
                 edgeMap = roi['xy']
                 break
@@ -26,7 +26,7 @@ def make_mask(image, image_id, nodules):
     cv2.fillConvexPoly(nodule_image, np.array(edgeMap), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
     cv2.imwrite('1.jpg', masked_data)
-    print("mask created\n")
+    print("\n\nmask created\n\n")
     return masked_data
 
 
