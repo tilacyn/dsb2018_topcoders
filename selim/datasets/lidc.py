@@ -110,7 +110,7 @@ class LIDCDatasetIterator(Iterator):
         batch_x = []
         batch_y = []
         for image_index in index_array:
-            image_name = self.image_name_template.format(image_index)
+            image_name = self.image_name_template.format(self.image_ids[image_index])
             image = imread(image_name)
             nodules = parseXML(self.image_dir)
 
