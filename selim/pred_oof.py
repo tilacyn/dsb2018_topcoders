@@ -3,8 +3,8 @@ from params import args
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
-from keras.applications.imagenet_utils import preprocess_input
-from keras.preprocessing.image import img_to_array, load_img
+from tensorflow.keras.applications.imagenet_utils import preprocess_input
+from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from models.model_factory import make_model
 

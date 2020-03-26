@@ -7,16 +7,16 @@ import tensorflow as tf
 tf.set_random_seed(1)
 import timeit
 import cv2
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint, LearningRateScheduler #, TensorBoard
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler #, TensorBoard
 from models import get_densenet121_unet_softmax, dice_coef_rounded_ch0, dice_coef_rounded_ch1, schedule_steps, softmax_dice_loss
-import keras.backend as K
+import tensorflow.keras.backend as K
 import pandas as pd
 from tqdm import tqdm
 from transforms import aug_mega_hardcore
-from keras import metrics
+from tensorflow.keras import metrics
 from abc import abstractmethod
-from keras.preprocessing.image import Iterator
+from tensorflow.keras.preprocessing.image import Iterator
 import time
 from skimage import measure
 from skimage.morphology import square, erosion, dilation, watershed
