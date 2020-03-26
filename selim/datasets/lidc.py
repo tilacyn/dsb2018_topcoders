@@ -11,12 +11,13 @@ def make_mask(image, image_id, nodules):
     height, width = image.shape
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
-    for nodule in nodules:
+    for nodule in nodules[:1]:
         print(nodule)
         for roi in nodule['roi']:
             print(roi)
             if roi['sop_uid'] == image_id:
                 edgeMap = roi['xy']
+                break
 
     cv2.fillConvexPoly(nodule_image, np.array(edgeMap), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
@@ -115,7 +116,7 @@ class LIDCDatasetIterator(Iterator):
             nodules = parseXML(self.image_dir)
 
             batch_x.append(image)
-            batch_y.append(make_mask(image, dcm_ds.data_element('UID'), nodules[0]['roi']))
+            batch_y.append(make_mask(image, dcm_ds.data_element('UID'), nodules))
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
         return batch_x, batch_y
