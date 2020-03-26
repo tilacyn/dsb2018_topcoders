@@ -115,7 +115,7 @@ class LIDCDatasetIterator(Iterator):
             nodules = parseXML(self.image_dir)
 
             batch_x.append(image)
-            batch_y.append(make_mask(image_name, dcm_ds.data_element('UID'), nodules[0]['roi']))
+            batch_y.append(make_mask(image, dcm_ds.data_element('UID'), nodules[0]['roi']))
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
         return batch_x, batch_y
