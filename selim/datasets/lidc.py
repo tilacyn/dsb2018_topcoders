@@ -53,11 +53,12 @@ def imread(image_path):
     ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
     image = img_2d_scaled
+    image3d = np.zeros([image.shape[0], image.shape[1], 3])
     for i in range(len(image)):
         for j in range(len(image[i])):
-            image[i][j] = [image[i][j], image[i][j], image[i][j]]
+            image3d[i][j] = [image[i][j], image[i][j], image[i][j]]
 
-    return image, ds
+    return image3d, ds
 
 
 def parseXML(scan_path):
