@@ -26,7 +26,7 @@ def make_mask(image, image_id, nodules):
 
     print(edgeMap)
 
-    cv2.fillConvexPoly(nodule_image, np.array(edgeMap), (122, 122, 122))
+    cv2.fillConvexPoly(nodule_image, np.array([[100, 500], [500, 500], [500, 100]]), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
     cv2.imwrite('1.jpg', masked_data)
     print("\n\nmask created\n\n")
