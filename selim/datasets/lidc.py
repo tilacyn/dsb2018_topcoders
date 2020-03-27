@@ -8,8 +8,7 @@ import pydicom as dicom
 
 
 def make_mask(image, image_id, nodules):
-    height = image.shape[0]
-    width = image.shape[1]
+    height, width, _ = image.shape
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
     edgeMap = None
@@ -53,7 +52,12 @@ def imread(image_path):
 
     ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
-    return img_2d_scaled, ds
+    image = img_2d_scaled
+    for i in range(len(image)):
+        for j in range(len(image[i])):
+            image[i][j] = [image[i][j], image[i][j], image[i][j]]
+
+    return image, ds
 
 
 def parseXML(scan_path):
@@ -129,6 +133,7 @@ class LIDCDatasetIterator(Iterator):
         batch_y = np.array(batch_y, dtype="float32")
         print("batch_x.shape:")
         print(batch_x.shape)
+        print(self.batch_size)
         return batch_x, batch_y
 
     def create_image_ids(self):
