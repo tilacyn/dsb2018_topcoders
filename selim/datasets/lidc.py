@@ -11,21 +11,20 @@ def make_mask(image, image_id, nodules):
     height, width, _ = image.shape
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
-    edgeMap = None
+    edge_map = None
     for nodule in nodules[:1]:
         print(nodule)
         for roi in nodule['roi']:
             print(roi)
+            # todo ==
             if roi['sop_uid'] != image_id:
-                edgeMap = roi['xy']
+                edge_map = roi['xy']
                 break
 
-    if edgeMap is None:
+    if edge_map is None:
         return image
 
-    print(edgeMap)
-
-    cv2.fillConvexPoly(nodule_image, np.array([[100, 500], [500, 500], [500, 100]]), (122, 122, 122))
+    cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
     cv2.imwrite('1.jpg', masked_data)
     print("\n\nmask created\n\n")
@@ -33,10 +32,7 @@ def make_mask(image, image_id, nodules):
 
 
 def test():
-    roi = {'sop_uid': 1, 'xy': [[100, 500], [500, 500], [500, 100]]}
-    nodules = [
-        {'roi': [roi]}
-    ]
+    nodules = parseXML('/Users/mkryuchkov/lung-ds/3000566-03192')
     image = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
     image_id = 1
     make_mask(image, image_id, nodules)
