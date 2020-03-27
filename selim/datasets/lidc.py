@@ -127,6 +127,8 @@ class LIDCDatasetIterator(Iterator):
             batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
+        print("batch_x.shape:")
+        print(batch_x.shape)
         return batch_x, batch_y
 
     def create_image_ids(self):
