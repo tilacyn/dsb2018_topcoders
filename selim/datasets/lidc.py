@@ -8,7 +8,8 @@ import pydicom as dicom
 
 
 def make_mask(image, image_id, nodules):
-    height, width = image.shape
+    height = image.shape[0]
+    width = image.shape[1]
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
     edgeMap = None
@@ -22,6 +23,8 @@ def make_mask(image, image_id, nodules):
 
     if edgeMap is None:
         return image
+
+    print(edgeMap)
 
     cv2.fillConvexPoly(nodule_image, np.array(edgeMap), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
