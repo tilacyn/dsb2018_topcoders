@@ -56,6 +56,11 @@ def imread(image_path):
 
     return image3d, ds
 
+def kek():
+
+    for root, subf, files in os.walk('..'):
+        print(root, subf, files)
+
 
 def parseXML(scan_path):
     '''
@@ -110,7 +115,6 @@ class LIDCDatasetIterator(Iterator):
     def __init__(self, image_dir, batch_size):
         seed = np.uint32(time.time() * 1000)
         n = len(os.listdir(image_dir))
-        self.image_name_template = image_dir + '/{}'
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
         self.nodules = parseXML(self.image_dir)
@@ -120,10 +124,10 @@ class LIDCDatasetIterator(Iterator):
         batch_x = []
         batch_y = []
         for image_index in index_array:
-            image_name = self.image_name_template.format(self.image_ids[image_index])
-            image, dcm_ds = imread(image_name)
-            nodules = parseXML(self.image_dir)
-            print('processing image: {}'.format(image_name))
+            file_name, parent_name = self.image_ids[image_index]
+            image, dcm_ds = imread(self.image_dir + '/' + file_name)
+            nodules = parseXML(self.image_dir + '/' + parent_name)
+            print('processing image: {}'.format(file_name))
             batch_x.append(image)
             batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
         batch_x = np.array(batch_x, dtype="float32")
@@ -134,7 +138,11 @@ class LIDCDatasetIterator(Iterator):
         return batch_x, batch_y
 
     def create_image_ids(self):
-        dcms = filter(lambda name: name.endswith('.dcm'), os.listdir(self.image_dir))
+        dcms = []
+        for root, _, files in os.walk(self.image_dir):
+            for file in files:
+                if file.endswith('dcm'):
+                    dcms.append((root + '/' + file, root))
         image_ids = {}
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
