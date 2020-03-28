@@ -1,6 +1,6 @@
 import tensorflow.keras.backend as K
 from tensorflow.keras.losses import categorical_crossentropy
-
+import cv2
 
 def hard_dice_coef(y_true, y_pred, smooth=1e-3):
     y_true_f = K.flatten(K.round(y_true[..., 0]))
@@ -71,3 +71,8 @@ def make_loss(loss_name):
         return mask_contour_mask_loss
     else:
         ValueError("Unknown loss.")
+
+def test():
+    img1 = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
+    img2 = cv2.imread('/Users/mkryuchkov/lung-ds/000002.jpg')
+    return binary_crossentropy(img1, img2)
