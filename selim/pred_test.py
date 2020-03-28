@@ -41,9 +41,8 @@ if __name__ == '__main__':
         print('processing {}'.format(d))
         img = imread(test_folder + '/' + d)[0]
 
-        for model in models:
-            pred = model.predict(np.array([img], 'float32'), batch_size=1)
-
+        pred = models[0].predict(np.array([img], 'float32'), batch_size=1)
+        print(pred.shape)
         cv2.imwrite(d + '.jpg', pred)
 
     elapsed = timeit.default_timer() - t0
