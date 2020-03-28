@@ -13,7 +13,7 @@ from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.utils import multi_gpu_model
 
 from datasets.lidc import LIDCDatasetIterator
-from .datasets.simple_ds import SimpleDatasetIterator
+from datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
 
 
