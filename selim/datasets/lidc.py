@@ -72,8 +72,9 @@ def parseXML(scan_path):
     [{nodule_id, roi:[{z, sop_uid, xy:[[x1,y1],[x2,y2],...]}]}]
     '''
     file_list = os.listdir(scan_path)
+    print
     for file in file_list:
-        if file.split('.')[1] == 'xml':
+        if '.' in file and file.split('.')[1] == 'xml':
             xml_file = file
             break
     prefix = "{http://www.nih.gov}"
@@ -85,7 +86,6 @@ def parseXML(scan_path):
     for session in readingSession_list:
         # print(session)
         unblinded_list = session.findall(prefix + "unblindedReadNodule")
-        print(unblinded_list)
         for unblinded in unblinded_list:
             nodule_id = unblinded.find(prefix + "noduleID").text
             edgeMap_num = len(unblinded.findall(prefix + "roi/" + prefix + "edgeMap"))
@@ -117,7 +117,6 @@ class LIDCDatasetIterator(Iterator):
         n = len(os.listdir(image_dir))
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
-        self.nodules = parseXML(self.image_dir)
         super().__init__(n, batch_size, False, seed)
 
     def _get_batches_of_transformed_samples(self, index_array):
