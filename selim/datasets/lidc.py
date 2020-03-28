@@ -124,8 +124,8 @@ class LIDCDatasetIterator(Iterator):
         batch_y = []
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
-            image, dcm_ds = imread(self.image_dir + '/' + file_name)
-            nodules = parseXML(self.image_dir + '/' + parent_name)
+            image, dcm_ds = imread(file_name)
+            nodules = parseXML(parent_name)
             print('processing image: {}'.format(file_name))
             batch_x.append(image)
             batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
