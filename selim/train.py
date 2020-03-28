@@ -13,6 +13,7 @@ from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.utils import multi_gpu_model
 
 from datasets.lidc import LIDCDatasetIterator
+from .datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
 
 
@@ -79,7 +80,8 @@ def run(args):
                 optimizer = Adam(lr=args.learning_rate, decay=float(args.decay), amsgrad=True)
             elif args.optimizer == 'sgd':
                 optimizer = SGD(lr=args.learning_rate, momentum=0.9, nesterov=True, decay=float(args.decay))
-        train_generator = LIDCDatasetIterator(args.images_dir, args.batch_size)
+        # train_generator = LIDCDatasetIterator(args.images_dir, args.batch_size)
+        train_generator = SimpleDatasetIterator()
         # random_transform = aug_mega_hardcore()
         # train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function, random_transform, batch_size=args.batch_size)
         # val_generator = dataset.val_generator(args.preprocessing_function, batch_size=1)
