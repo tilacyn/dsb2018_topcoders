@@ -18,6 +18,7 @@ def make_mask(image, image_id, nodules):
             # print(roi['sop_uid'])
             # print(image_id)
             if roi['sop_uid'] == image_id:
+                raise NotImplementedError
                 edge_map = roi['xy']
                 break
 
