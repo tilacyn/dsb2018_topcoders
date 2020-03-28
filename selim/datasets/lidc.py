@@ -12,7 +12,7 @@ def make_mask(image, image_id, nodules):
     nodule_image = np.zeros((height, width), np.uint8)
     # todo OR for all masks
     edge_map = None
-    for nodule in nodules[:1]:
+    for nodule in nodules:
         for roi in nodule['roi']:
             # todo ==
             # print(roi['sop_uid'])
@@ -37,7 +37,7 @@ def test():
     nodules = parseXML('/Users/mkryuchkov/lung-ds/3000566-03192')
     image = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
     image_id = 1
-    make_mask(image, image_id, nodules)
+    return make_mask(image, image_id, nodules)
 
 
 def imread(image_path):
@@ -122,6 +122,8 @@ class LIDCDatasetIterator(Iterator):
     def _get_batches_of_transformed_samples(self, index_array):
         batch_x = []
         batch_y = []
+        bsize = len(index_array)
+        index_array = [np.random.randint(0, 1000) for _ in range(bsize)]
         print('index_array : {}'.format(index_array))
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
