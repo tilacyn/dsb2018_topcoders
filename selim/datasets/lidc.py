@@ -129,10 +129,10 @@ class LIDCDatasetIterator(Iterator):
             print('processing image: {}'.format(file_name))
             batch_x.append(image)
             batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
-        batch_x = np.array(batch_x, dtype="float32")
+        # batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
         print("batch_x.shape:")
-        print(batch_x.shape)
+        # print(batch_x.shape)
         print(self.batch_size)
         return batch_x, batch_y
 
