@@ -3,28 +3,18 @@ import os
 from params import args
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
-from tensorflow.keras.preprocessing.image import img_to_array, load_img
-
 from tensorflow.keras.applications.imagenet_utils import preprocess_input
 
 from models.model_factory import make_model
 
 from datasets.lidc import imread
 from os import path, mkdir, listdir
-import numpy as np
-
-np.random.seed(1)
-import random
-
-random.seed(1)
 
 import timeit
 import cv2
 from tqdm import tqdm
 
 test_folder = args.test_folder
-test_pred = os.path.join(args.out_root_dir, args.out_masks_folder)
 
 all_ids = []
 all_images = []
@@ -45,7 +35,6 @@ if __name__ == '__main__':
         print("Building model {} from weights {} ".format(args.network, w))
         model.load_weights(w)
         models.append(model)
-    os.makedirs(test_pred, exist_ok=True)
     print('Predicting test')
     for d in tqdm(listdir(test_folder)):
         if not path.isdir(path.join(test_folder, d)):
