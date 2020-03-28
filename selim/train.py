@@ -151,7 +151,8 @@ def run(args):
 
         inputs, outputs = train_generator._get_batches_of_transformed_samples([1, 2, 3])
 
-        result = model.call(inputs)
+        # result = model.call(inputs)
+        result = model.predict(inputs[0], batch_size=1)
         print(result)
 
         del model
