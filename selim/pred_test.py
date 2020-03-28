@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print('Predicting test')
     for d in tqdm(listdir(test_folder)):
         print('processing {}'.format(d))
-        img = imread(test_folder + '/' + d)
+        img = imread(test_folder + '/' + d)[0]
 
         for model in models:
             pred = model.predict(np.array([img], 'float32'), batch_size=1)
