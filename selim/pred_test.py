@@ -37,14 +37,13 @@ if __name__ == '__main__':
         models.append(model)
     print('Predicting test')
     for d in tqdm(listdir(test_folder)):
-        if not path.isdir(path.join(test_folder, d)):
-            continue
+        print('processing {}'.format(d))
         img = imread(test_folder + '/' + d)
 
         for model in models:
             pred = model.predict(img, batch_size=1)
 
-        cv2.imwrite(test_folder + '/' + d, pred)
+        cv2.imwrite(d + '.jpg', pred)
 
     elapsed = timeit.default_timer() - t0
     print('Time: {:.3f} min'.format(elapsed / 60))
