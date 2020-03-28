@@ -81,10 +81,6 @@ def run(args):
             elif args.optimizer == 'sgd':
                 optimizer = SGD(lr=args.learning_rate, momentum=0.9, nesterov=True, decay=float(args.decay))
         train_generator = LIDCDatasetIterator(args.images_dir, args.batch_size)
-        # train_generator = SimpleDatasetIterator()
-        # random_transform = aug_mega_hardcore()
-        # train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function, random_transform, batch_size=args.batch_size)
-        # val_generator = dataset.val_generator(args.preprocessing_function, batch_size=1)
         best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network,fold)
 
         best_model = ModelCheckpointMGPU(model, filepath=best_model_file, monitor='val_loss',
