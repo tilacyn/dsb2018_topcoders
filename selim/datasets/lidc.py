@@ -13,11 +13,11 @@ def make_mask(image, image_id, nodules):
     # todo OR for all masks
     edge_map = None
     for nodule in nodules[:1]:
-        print(nodule)
+        # print(nodule)
         for roi in nodule['roi']:
-            print(roi)
+            # print(roi)
             # todo ==
-            if roi['sop_uid'] != image_id:
+            if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
                 break
 
@@ -27,7 +27,7 @@ def make_mask(image, image_id, nodules):
     cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
     # cv2.imwrite('1.jpg', masked_data)
-    print("\n\nmask created\n\n")
+    print("mask created")
     return masked_data
 
 
@@ -49,18 +49,15 @@ def imread(image_path):
     ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
     image = img_2d_scaled
-    image3d = np.zeros([image.shape[0], image.shape[1], 3])
-    for i in range(len(image)):
-        for j in range(len(image[i])):
-            image3d[i][j] = [image[i][j], image[i][j], image[i][j]]
-
-    return np.array(image3d), ds
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    # cv2.imwrite('image3d.jpg', image)
+    # image3d = cv2.imread('image3d.jpg')
+    print(image.shape)
+    return image, ds
 
 def kek():
-
-    for root, subf, files in os.walk('..'):
-        print(root, subf, files)
-
+    image3d, ds = imread('/Users/mkryuchkov/Downloads/000500.dcm')
+    return image3d
 
 def parseXML(scan_path):
     '''
@@ -127,10 +124,13 @@ class LIDCDatasetIterator(Iterator):
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
             print('processing image: {}'.format(file_name))
+            image = cv2.resize(image, (512, 512))
+            mask = make_mask(image, dcm_ds.get('UID'), nodules)
+            mask = cv2.resize(mask, (512, 512))
             batch_x.append(image)
-            batch_y.append(make_mask(image, dcm_ds.get('UID'), nodules))
-        batch_x = np.array(batch_x)
-        batch_y = np.array(batch_y)
+            batch_y.append(mask)
+        batch_x = np.array(batch_x, dtype=np.float64)
+        batch_y = np.array(batch_y, dtype=np.float64)
         print("batch_x.shape:")
         print(batch_x.shape)
         print(self.batch_size)
