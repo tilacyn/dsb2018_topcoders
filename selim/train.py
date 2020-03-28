@@ -137,23 +137,23 @@ def run(args):
         #     5,
         #     workers=args.num_workers
         # # )
-        #
-        # model.fit_generator(
-        #     train_generator,
-        #     steps_per_epoch=steps_per_epoch,
-        #     epochs=args.epochs,
-        #     # validation_data=validation_data,
-        #     # validation_steps=validation_steps,
-        #     callbacks=callbacks,
-        #     max_queue_size=5,
-        #     verbose=1,
-        #     workers=args.num_workers)
 
-        inputs, outputs = train_generator._get_batches_of_transformed_samples([1])
+        model.fit_generator(
+            train_generator,
+            steps_per_epoch=steps_per_epoch,
+            epochs=args.epochs,
+            # validation_data=validation_data,
+            # validation_steps=validation_steps,
+            callbacks=callbacks,
+            max_queue_size=5,
+            verbose=1,
+            workers=args.num_workers)
+
+        # inputs, outputs = train_generator._get_batches_of_transformed_samples([1])
 
         # result = model.call(inputs)
-        result = model.predict(inputs, batch_size=1)
-        print(result.shape)
+        # result = model.predict(inputs, batch_size=1)
+        # print(result.shape)
 
         del model
         K.clear_session()

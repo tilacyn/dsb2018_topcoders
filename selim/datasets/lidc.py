@@ -24,9 +24,11 @@ def make_mask(image, image_id, nodules):
 
     # todo what color to fill?
     cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
-    masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
+    mask = cv2.bitwise_and(image, image, mask=nodule_image)
+    mask = mask[:,:,:-1]
     print("mask created")
-    return masked_data
+    print(mask.shape)
+    return mask
 
 
 def test():
