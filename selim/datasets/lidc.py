@@ -26,7 +26,7 @@ def make_mask(image, image_id, nodules):
 
     cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
-    cv2.imwrite('1.jpg', masked_data)
+    # cv2.imwrite('1.jpg', masked_data)
     print("\n\nmask created\n\n")
     return masked_data
 
@@ -54,7 +54,7 @@ def imread(image_path):
         for j in range(len(image[i])):
             image3d[i][j] = [image[i][j], image[i][j], image[i][j]]
 
-    return image3d, ds
+    return np.array(image3d), ds
 
 def kek():
 
