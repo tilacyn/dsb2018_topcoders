@@ -153,7 +153,7 @@ def run(args):
 
         # result = model.call(inputs)
         result = model.predict(inputs, batch_size=1)
-        print(result)
+        print(result.shape)
 
         del model
         K.clear_session()
