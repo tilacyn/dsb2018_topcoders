@@ -133,6 +133,7 @@ def run(args):
 
         model.fit(
             train_generator,
+            train_generator,
             5,
             workers=args.num_workers
         )
