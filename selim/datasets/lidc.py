@@ -22,7 +22,7 @@ def make_mask(image, image_id, nodules):
                 break
 
     if edge_map is None:
-        return image
+        return image[:,:,:-1]
 
     # todo what color to fill?
     cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
