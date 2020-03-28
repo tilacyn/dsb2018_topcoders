@@ -118,6 +118,7 @@ class LIDCDatasetIterator(Iterator):
     def _get_batches_of_transformed_samples(self, index_array):
         batch_x = []
         batch_y = []
+        print('len(index_array) : {}'.format(len(index_array)))
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
