@@ -149,10 +149,10 @@ def run(args):
         #     verbose=1,
         #     workers=args.num_workers)
 
-        inputs, outputs = train_generator._get_batches_of_transformed_samples([1, 2, 3])
+        inputs, outputs = train_generator._get_batches_of_transformed_samples([1])
 
         # result = model.call(inputs)
-        result = model.predict(inputs[0], batch_size=1)
+        result = model.predict(inputs, batch_size=1)
         print(result)
 
         del model
