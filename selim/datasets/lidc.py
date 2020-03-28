@@ -13,9 +13,7 @@ def make_mask(image, image_id, nodules):
     # todo OR for all masks
     edge_map = None
     for nodule in nodules[:1]:
-        # print(nodule)
         for roi in nodule['roi']:
-            # print(roi)
             # todo ==
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
@@ -24,9 +22,9 @@ def make_mask(image, image_id, nodules):
     if edge_map is None:
         return image
 
+    # todo what color to fill?
     cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
     masked_data = cv2.bitwise_and(image, image, mask=nodule_image)
-    # cv2.imwrite('1.jpg', masked_data)
     print("mask created")
     return masked_data
 
@@ -114,6 +112,7 @@ class LIDCDatasetIterator(Iterator):
         n = len(os.listdir(image_dir))
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
+        self.data_shape = (256, 256)
         super().__init__(n, batch_size, False, seed)
 
     def _get_batches_of_transformed_samples(self, index_array):
@@ -124,9 +123,9 @@ class LIDCDatasetIterator(Iterator):
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
             print('processing image: {}'.format(file_name))
-            image = cv2.resize(image, (512, 512))
+            image = cv2.resize(image, self.data_shape)
             mask = make_mask(image, dcm_ds.get('UID'), nodules)
-            mask = cv2.resize(mask, (512, 512))
+            mask = cv2.resize(mask, self.data_shape)
             batch_x.append(image)
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
