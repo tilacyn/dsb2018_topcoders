@@ -13,6 +13,7 @@ from os import path, mkdir, listdir
 import timeit
 import cv2
 from tqdm import tqdm
+import numpy as np
 
 test_folder = args.test_folder
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
         img = imread(test_folder + '/' + d)
 
         for model in models:
-            pred = model.predict(img, batch_size=1)
+            pred = model.predict(np.array([img], 'float32'), batch_size=1)
 
         cv2.imwrite(d + '.jpg', pred)
 
