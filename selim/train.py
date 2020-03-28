@@ -123,7 +123,8 @@ def run(args):
             callbacks.insert(0, lrSchedule)
         tb = TensorBoard("logs/{}_{}".format(args.network, fold))
         callbacks.append(tb)
-        steps_per_epoch = len(train_generator.image_ids) // args.batch_size + 1
+        # steps_per_epoch = len(train_generator.image_ids) // args.batch_size + 1
+        steps_per_epoch = 20
         if args.steps_per_epoch > 0:
             steps_per_epoch = args.steps_per_epoch
         # validation_data = val_generator
