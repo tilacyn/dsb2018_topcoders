@@ -149,7 +149,7 @@ def run(args):
         #     verbose=1,
         #     workers=args.num_workers)
 
-        inputs = train_generator._get_batches_of_transformed_samples([1, 2, 3])
+        inputs, outputs = train_generator._get_batches_of_transformed_samples([1, 2, 3])
 
         result = model.call(inputs)
         print(result)
