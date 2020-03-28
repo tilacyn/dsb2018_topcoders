@@ -18,9 +18,7 @@ np.random.seed(1)
 import random
 
 random.seed(1)
-import tensorflow as tf
 
-tf.set_random_seed(1)
 import timeit
 import cv2
 from tqdm import tqdm
