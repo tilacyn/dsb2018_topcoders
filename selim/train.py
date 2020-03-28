@@ -131,16 +131,22 @@ def run(args):
         # validation_data = val_generator
         # validation_steps = len(dataset.val_ids)
 
-        model.fit_generator(
+        model.fit(
             train_generator,
-            steps_per_epoch=steps_per_epoch,
-            epochs=args.epochs,
-            # validation_data=validation_data,
-            # validation_steps=validation_steps,
-            callbacks=callbacks,
-            max_queue_size=5,
-            verbose=1,
-            workers=args.num_workers)
+            5,
+            workers=args.num_workers
+        )
+
+        # model.fit_generator(
+        #     train_generator,
+        #     steps_per_epoch=steps_per_epoch,
+        #     epochs=args.epochs,
+        #     # validation_data=validation_data,
+        #     # validation_steps=validation_steps,
+        #     callbacks=callbacks,
+        #     max_queue_size=5,
+        #     verbose=1,
+        #     workers=args.num_workers)
 
         del model
         K.clear_session()
