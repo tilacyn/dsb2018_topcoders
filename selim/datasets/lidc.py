@@ -146,7 +146,7 @@ class LIDCDatasetIterator(Iterator):
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
-            print('processing image: {}'.format(file_name))
+            # print('processing image: {}'.format(file_name))
             mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             image = cv2.resize(image, self.data_shape)
             mask = cv2.resize(mask, self.data_shape)
@@ -154,8 +154,6 @@ class LIDCDatasetIterator(Iterator):
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
         batch_y = np.array(batch_y, dtype=np.float64)
-        if np.random.randint(0, 35) == 4:
-            raise NotImplementedError
         return batch_x, batch_y
 
     def create_image_ids(self):
@@ -168,13 +166,13 @@ class LIDCDatasetIterator(Iterator):
                 if file.endswith('dcm'):
                     dcms.append((root + '/' + file, root))
         image_ids = {}
-        print('total training ds len: {}', len(dcms))
+        print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
 
     def list_observed(self):
-        return ['0787', '0356', '0351', '0292', '0287', '0272']
+        return ['0787', '0356', '0351', '0292', '0287', '0272', '0560', '0509', '0502', '0499',  '0480', '0404']
 
 
 class LIDCValidationDatasetIterator(LIDCDatasetIterator):
