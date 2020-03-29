@@ -134,9 +134,7 @@ class LIDCDatasetIterator(Iterator):
     def _get_batches_of_transformed_samples(self, index_array):
         batch_x = []
         batch_y = []
-        bsize = len(index_array)
-        index_array = [np.random.randint(0, 1000) for _ in range(bsize)]
-        # print('index_array : {}'.format(index_array))
+        print('index_array : {}'.format(index_array))
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
@@ -145,22 +143,10 @@ class LIDCDatasetIterator(Iterator):
             mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             image = cv2.resize(image, self.data_shape)
             mask = cv2.resize(mask, self.data_shape)
-            # if em is not None:
-            #     print(em)
-            #     cv2.imwrite('kek.jpg', mask[:,:,0])
-            #     raise NotImplementedError
-            # plt.imshow(mask[:,:,0])
-            # plt.axis('off')
-            # plt.show()
             batch_x.append(image)
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
         batch_y = np.array(batch_y, dtype=np.float64)
-        # print("batch_x.shape:")
-        # print(batch_x.shape)
-        # print("batch_y.shape:")
-        # print(batch_y.shape)
-        # print(self.batch_size)
         return batch_x, batch_y
 
     def create_image_ids(self):
