@@ -1,5 +1,6 @@
 import gc
 import cv2
+
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
 import os
@@ -16,7 +17,6 @@ from datasets.lidc import LIDCDatasetIterator
 from datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
 
-
 from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import RMSprop, Adam, SGD
 
@@ -28,7 +28,8 @@ import tensorflow.keras.backend as K
 
 
 class ModelCheckpointMGPU(ModelCheckpoint):
-    def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1):
+    def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False,
+                 save_weights_only=False, mode='auto', period=1):
         self.original_model = original_model
         super().__init__(filepath, monitor, verbose, save_best_only, save_weights_only, mode, period)
 
@@ -36,7 +37,9 @@ class ModelCheckpointMGPU(ModelCheckpoint):
         self.model = self.original_model
         super().on_epoch_end(epoch, logs)
 
+
 gpus = [x.name for x in device_lib.list_local_devices() if x.name[:4] == '/gpu']
+
 
 def freeze_model(model, freeze_before_layer):
     if freeze_before_layer == "ALL":
@@ -49,6 +52,7 @@ def freeze_model(model, freeze_before_layer):
                 freeze_before_layer_index = i
         for l in model.layers[:freeze_before_layer_index + 1]:
             l.trainable = False
+
 
 def run(args):
     if args.crop_size:
@@ -71,6 +75,7 @@ def run(args):
             model.load_weights(weights_path, by_name=True)
         freeze_model(model, args.freeze_till_layer)
         optimizer = RMSprop(lr=args.learning_rate)
+        print('learning rate: {}'.format(args.learning_rate))
         if args.optimizer:
             if args.optimizer == 'rmsprop':
                 optimizer = RMSprop(lr=args.learning_rate, decay=float(args.decay))
@@ -81,28 +86,27 @@ def run(args):
             elif args.optimizer == 'sgd':
                 optimizer = SGD(lr=args.learning_rate, momentum=0.9, nesterov=True, decay=float(args.decay))
         train_generator = LIDCDatasetIterator(args.images_dir, args.batch_size)
-        best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network,fold)
+        best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network, fold)
 
         best_model = ModelCheckpointMGPU(model, filepath=best_model_file, monitor='val_loss',
-                                     verbose=1,
-                                     mode='min',
-                                     period=args.save_period,
-                                     save_best_only=True,
-                                     save_weights_only=True)
-        last_model_file = '{}/last_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network,fold)
+                                         verbose=1,
+                                         mode='min',
+                                         period=args.save_period,
+                                         save_best_only=True,
+                                         save_weights_only=True)
+        last_model_file = '{}/last_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network, fold)
 
         last_model = ModelCheckpointMGPU(model, filepath=last_model_file, monitor='val_loss',
-                                     verbose=1,
-                                     mode='min',
-                                     period=args.save_period,
-                                     save_best_only=False,
-                                     save_weights_only=True)
+                                         verbose=1,
+                                         mode='min',
+                                         period=args.save_period,
+                                         save_best_only=False,
+                                         save_weights_only=True)
         if args.multi_gpu:
             model = multi_gpu_model(model, len(gpus))
         model.compile(loss=make_loss(args.loss_function),
-                      # optimizer=optimizer,
-                      # metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef])
-                      )
+                      optimizer=optimizer,
+                      metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef])
 
         def schedule_steps(epoch, steps):
             for step in steps:
@@ -120,19 +124,11 @@ def run(args):
             callbacks.insert(0, lrSchedule)
         tb = TensorBoard("logs/{}_{}".format(args.network, fold))
         callbacks.append(tb)
-        # steps_per_epoch = len(train_generator.image_ids) // args.batch_size + 1
         steps_per_epoch = 20
         if args.steps_per_epoch > 0:
             steps_per_epoch = args.steps_per_epoch
         # validation_data = val_generator
         # validation_steps = len(dataset.val_ids)
-
-        # model.fit(
-        #     train_generator,
-        #     train_generator,
-        #     5,
-        #     workers=args.num_workers
-        # # )
 
         model.fit_generator(
             train_generator,
@@ -144,12 +140,6 @@ def run(args):
             max_queue_size=5,
             verbose=1,
             workers=args.num_workers)
-
-        # inputs, outputs = train_generator._get_batches_of_transformed_samples([1])
-
-        # result = model.call(inputs)
-        # result = model.predict(inputs, batch_size=1)
-        # print(result.shape)
 
         del model
         K.clear_session()
