@@ -36,8 +36,8 @@ def dice_coef_loss_bce(y_true, y_pred, dice=0.5, bce=0.5):
 
 
 def binary_crossentropy(y, p):
-    print(y)
-    print(p)
+    print(y.eval())
+    print(p.eval())
     result = K.mean(K.binary_crossentropy(y, p))
     print(result)
     raise NotImplementedError
