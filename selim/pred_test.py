@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
         pred = models[0].predict(np.array([img], 'float32'), batch_size=1)
         print(pred.shape)
-        cv2.imwrite(os.path.join(args.out_root_dir, d + '.jpg'), pred[0][:,:,0])
+        cv2.imwrite(os.path.join(args.out_root_dir, d + '.jpg'), pred[0][:,:,1])
 
     elapsed = timeit.default_timer() - t0
     print('Time: {:.3f} min'.format(elapsed / 60))
