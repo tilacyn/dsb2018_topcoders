@@ -157,6 +157,7 @@ class LIDCDatasetIterator(Iterator):
         dcms = []
         observed = ['0787', '0356', '0351', '0292', '0287', '0272']
         for root, _, files in os.walk(self.image_dir):
+            print(root[11:15])
             if root[11:15] not in observed:
                 continue
             for file in files:
