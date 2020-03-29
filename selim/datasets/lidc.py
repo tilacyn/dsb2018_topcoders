@@ -129,7 +129,7 @@ class LIDCDatasetIterator(Iterator):
         for root, _, files in os.walk(image_dir):
             if '.dcm' in files and reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in self.list_observed()]):
                 n += 1
-        n = len(list(os.walk(image_dir)))
+        print("total len: {}".format(n))
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
         self.data_shape = (256, 256)
