@@ -14,6 +14,7 @@ from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.utils import multi_gpu_model
 
 from datasets.lidc import LIDCDatasetIterator
+from datasets.lidc import LIDCValidationDatasetIterator
 from datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
 
@@ -127,15 +128,15 @@ def run(args):
             callbacks.insert(0, lrSchedule)
         tb = TensorBoard("logs/{}_{}".format(args.network, fold))
         callbacks.append(tb)
-        # validation_data = val_generator
-        # validation_steps = len(dataset.val_ids)
+        validation_data = LIDCValidationDatasetIterator(args.images_dir, args.batch_size)
+        validation_steps = len(validation_data.image_ids)
 
         model.fit_generator(
             train_generator,
             steps_per_epoch=args.steps_per_epoch,
             epochs=args.epochs,
-            # validation_data=validation_data,
-            # validation_steps=validation_steps,
+            validation_data=validation_data,
+            validation_steps=validation_steps,
             callbacks=callbacks,
             max_queue_size=5,
             verbose=1,
