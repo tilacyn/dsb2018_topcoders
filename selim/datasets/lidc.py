@@ -20,19 +20,20 @@ def make_mask(image, image_id, nodules):
                 break
 
     if edge_map is None:
+        print('no nodules')
         mask = image
     else:
         # todo what color to fill?
         cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
         mask = nodule_image
     mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-    print('before repeat: {}'.format(mask.shape))
+    # print('before repeat: {}'.format(mask.shape))
     mask = np.reshape(mask, (height, width, 1))
     mask = np.repeat(mask, 2, axis=2)
     cv2.imwrite('kek2.jpg', mask[:,:,0])
-    print('after repeat: {}'.format(mask.shape))
-    print("mask created")
-    print(mask.shape)
+    # print('after repeat: {}'.format(mask.shape))
+    print("mask created with nodules")
+    # print(mask.shape)
     return mask
 
 
@@ -149,11 +150,11 @@ class LIDCDatasetIterator(Iterator):
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
         batch_y = np.array(batch_y, dtype=np.float64)
-        print("batch_x.shape:")
-        print(batch_x.shape)
-        print("batch_y.shape:")
-        print(batch_y.shape)
-        print(self.batch_size)
+        # print("batch_x.shape:")
+        # print(batch_x.shape)
+        # print("batch_y.shape:")
+        # print(batch_y.shape)
+        # print(self.batch_size)
         return batch_x, batch_y
 
     def create_image_ids(self):
