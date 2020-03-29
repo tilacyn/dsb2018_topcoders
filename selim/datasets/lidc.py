@@ -17,14 +17,14 @@ def make_mask(image, image_id, nodules):
         for roi in nodule['roi']:
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
-                break
+                cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
+
 
     if edge_map is None:
-        print('no nodules')
+        # print('no nodules')
         mask = image
     else:
         # todo what color to fill?
-        cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
         mask = nodule_image
     mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
     # print('before repeat: {}'.format(mask.shape))
@@ -32,7 +32,7 @@ def make_mask(image, image_id, nodules):
     mask = np.repeat(mask, 2, axis=2)
     cv2.imwrite('kek2.jpg', mask[:,:,0])
     # print('after repeat: {}'.format(mask.shape))
-    print("mask created with nodules")
+    # print("mask created with nodules")
     # print(mask.shape)
     return mask
 
@@ -46,8 +46,9 @@ def test():
             continue
         image, dcm_ds = imread(root + '/' + im_name)
         print(dcm_ds.SliceLocation)
-        if dcm_ds.SliceLocation == -125.0:
+        if dcm_ds.SliceLocation == -150:
             make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+            break
         # print(dcm_ds.get('UID'))
 
     # return make_mask(image, image_id, nodules)
@@ -67,7 +68,7 @@ def imread(image_path):
     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     # cv2.imwrite('image3d.jpg', image)
     # image3d = cv2.imread('image3d.jpg')
-    print(image.shape)
+    # print(image.shape)
     return image, ds
 
 def kek():
@@ -137,12 +138,12 @@ class LIDCDatasetIterator(Iterator):
         batch_y = []
         bsize = len(index_array)
         index_array = [np.random.randint(0, 1000) for _ in range(bsize)]
-        print('index_array : {}'.format(index_array))
+        # print('index_array : {}'.format(index_array))
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
-            print('processing image: {}'.format(file_name))
+            # print('processing image: {}'.format(file_name))
             image = cv2.resize(image, self.data_shape)
             mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             mask = cv2.resize(mask, self.data_shape)
