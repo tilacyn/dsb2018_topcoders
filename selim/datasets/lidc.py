@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import cv2
 import pydicom as dicom
 
+from functools import reduce
 
 def make_mask(image, image_id, nodules):
     height, width, _ = image.shape
@@ -157,8 +158,7 @@ class LIDCDatasetIterator(Iterator):
         dcms = []
         observed = ['0787', '0356', '0351', '0292', '0287', '0272']
         for root, _, files in os.walk(self.image_dir):
-            print(root[11:15])
-            if root[11:15] not in observed:
+            if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
                 continue
             for file in files:
                 if file.endswith('dcm'):
