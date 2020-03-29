@@ -106,7 +106,7 @@ def run(args):
         if args.multi_gpu:
             model = multi_gpu_model(model, len(gpus))
         model.compile(
-            loss=make_loss('double_hat_loss'),
+            loss=make_loss('double_head_loss'),
             # loss=make_loss(args.loss_function),
             optimizer=optimizer,
             metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef]
