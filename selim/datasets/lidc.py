@@ -35,10 +35,21 @@ def make_mask(image, image_id, nodules):
 
 
 def test():
+    root = '/Users/mkryuchkov/lung-ds/3000566-03192'
     nodules = parseXML('/Users/mkryuchkov/lung-ds/3000566-03192')
     image = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
-    image_id = 1
-    return make_mask(image, image_id, nodules)
+    for im_name in os.listdir(root):
+        if not im_name.endswith('dcm'):
+            continue
+        image, dcm_ds = imread(root + '/' + im_name)
+        # if np.random.randint(2, 9) == 4:
+        print(dcm_ds.SliceLocation)
+        if dcm_ds.SliceLocation == -125.0:
+        # if dcm_ds.get('UID') != '1.3.6.1.4.1.14519.5.2.1.6279.6001.110383487652933113465768208719':
+            return dcm_ds
+        # print(dcm_ds.get('UID'))
+
+    # return make_mask(image, image_id, nodules)
 
 
 def imread(image_path):
@@ -132,7 +143,7 @@ class LIDCDatasetIterator(Iterator):
             nodules = parseXML(parent_name)
             print('processing image: {}'.format(file_name))
             image = cv2.resize(image, self.data_shape)
-            mask = make_mask(image, dcm_ds.get('UID'), nodules)
+            mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             mask = cv2.resize(mask, self.data_shape)
             batch_x.append(image)
             batch_y.append(mask)
