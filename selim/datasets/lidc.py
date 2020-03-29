@@ -31,7 +31,7 @@ def make_mask(image, image_id, nodules):
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
-    return mask
+    return mask, edge_map
 
 
 def test():
@@ -142,10 +142,11 @@ class LIDCDatasetIterator(Iterator):
             nodules = parseXML(parent_name)
             # print('processing image: {}'.format(file_name))
             image = cv2.resize(image, self.data_shape)
-            mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+            mask, em = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             mask = cv2.resize(mask, self.data_shape)
-            cv2.imwrite('kek.jpg', mask[:,:,0])
-            raise NotImplementedError
+            if em is not None:
+                cv2.imwrite('kek.jpg', mask[:,:,0])
+                raise NotImplementedError
             plt.imshow(mask[:,:,0])
             plt.axis('off')
             plt.show()
