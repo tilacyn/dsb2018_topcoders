@@ -12,7 +12,7 @@ from functools import reduce
 
 def make_mask(image, image_id, nodules):
     height, width, depth = image.shape
-    print(image.shape)
+    # print(image.shape)
     nodule_image = np.zeros((height, width, depth), np.uint8)
     # todo OR for all masks
     edge_map = None
@@ -151,7 +151,7 @@ class LIDCDatasetIterator(Iterator):
 
     def create_image_ids(self):
         dcms = []
-        observed = ['0787', '0356', '0351', '0292', '0287', '0272']
+        observed = self.list_observed()
         for root, _, files in os.walk(self.image_dir):
             if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
                 continue
@@ -163,3 +163,11 @@ class LIDCDatasetIterator(Iterator):
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
+
+    def list_observed(self):
+        return ['0787', '0356', '0351', '0292', '0287', '0272']
+
+
+class LIDCValidationDatasetIterator(LIDCDatasetIterator):
+    def list_observed(self):
+        return ['0941', '0848', '0796']
