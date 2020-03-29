@@ -22,13 +22,10 @@ def make_mask(image, image_id, nodules):
         mask = image
     else:
         # todo what color to fill?
-        cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
+        cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
         mask = nodule_image
-        # mask = cv2.bitwise_and(image, image, mask=nodule_image)
-    mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-    cv2.imwrite('kek.jpg', mask)
-    raise NotImplementedError
     print('before repeat: {}'.format(mask.shape))
+    mask = np.reshape(mask, (height, width, 1))
     mask = np.repeat(mask, 2, axis=2)
     print('after repeat: {}'.format(mask.shape))
     print("mask created")
@@ -48,7 +45,7 @@ def test():
         print(dcm_ds.SliceLocation)
         if dcm_ds.SliceLocation == -125.0:
         # if dcm_ds.get('UID') != '1.3.6.1.4.1.14519.5.2.1.6279.6001.110383487652933113465768208719':
-            return dcm_ds
+            make_mask(image, dcm_ds.SOPInstanceUID, nodules)
         # print(dcm_ds.get('UID'))
 
     # return make_mask(image, image_id, nodules)
@@ -165,7 +162,7 @@ class LIDCDatasetIterator(Iterator):
                 if file.endswith('dcm'):
                     dcms.append((root + '/' + file, root))
         image_ids = {}
-        print('total training ds len: {}', len(dcms));
+        print('total training ds len: {}', len(dcms))
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
