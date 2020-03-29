@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 arg = parser.add_argument
 arg('--gpu', default="0")
-arg('--epochs', type=int, default=5)
+arg('--epochs', type=int, default=50)
 arg('--fold', default='0')
 arg('--n_folds', type=int, default=4)
 arg('--freeze_till_layer', default='input_1')

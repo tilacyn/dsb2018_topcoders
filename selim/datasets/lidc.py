@@ -30,7 +30,7 @@ def make_mask(image, image_id, nodules):
     # print('before repeat: {}'.format(mask.shape))
     mask = np.reshape(mask, (height, width, 1))
     mask = np.repeat(mask, 2, axis=2)
-    cv2.imwrite('kek2.jpg', mask[:,:,0])
+    # cv2.imwrite('kek2.jpg', mask[:,:,0])
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
