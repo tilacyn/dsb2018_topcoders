@@ -36,12 +36,12 @@ def dice_coef_loss_bce(y_true, y_pred, dice=0.5, bce=0.5):
 
 
 def binary_crossentropy(y, p):
-    print(y.eval())
-    print(p.eval())
+    # print(y.eval())
+    # print(p.eval())
     result = K.mean(K.binary_crossentropy(y, p))
-    print(result)
-    raise NotImplementedError
-
+    # print(result)
+    # raise NotImplementedError
+    return result
 
 def double_head_loss(y_true, y_pred):
     mask_loss = dice_coef_loss_bce(y_true[..., 0], y_pred[..., 0])
