@@ -14,21 +14,23 @@ def make_mask(image, image_id, nodules):
     edge_map = None
     for nodule in nodules:
         for roi in nodule['roi']:
-            # todo ==
-            # print(roi['sop_uid'])
-            # print(image_id)
             if roi['sop_uid'] == image_id:
-                raise NotImplementedError
                 edge_map = roi['xy']
                 break
 
     if edge_map is None:
-        return image[:,:,:-1]
-
-    # todo what color to fill?
-    cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
-    mask = cv2.bitwise_and(image, image, mask=nodule_image)
-    mask = mask[:,:,:-1]
+        mask = image
+    else:
+        # todo what color to fill?
+        cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (122, 122, 122))
+        mask = nodule_image
+        # mask = cv2.bitwise_and(image, image, mask=nodule_image)
+    mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
+    cv2.imwrite('kek.jpg', mask)
+    raise NotImplementedError
+    print('before repeat: {}'.format(mask.shape))
+    mask = np.repeat(mask, 2, axis=2)
+    print('after repeat: {}'.format(mask.shape))
     print("mask created")
     print(mask.shape)
     return mask
