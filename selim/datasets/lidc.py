@@ -169,6 +169,19 @@ class LIDCDatasetIterator(Iterator):
     def list_observed(self):
         return ['0787', '0356', '0351', '0292', '0287', '0272']
 
+    def next(self):
+        """For python 2.x.
+
+        # Returns
+            The next batch.
+        """
+        with self.lock:
+            index_array = next(self.index_generator)
+            print('after yiled: {}'.format(self.batch_index))
+        # The transformation of images is not under thread lock
+        # so it can be done in parallel
+        return self._get_batches_of_transformed_samples(index_array)
+
 
 class LIDCValidationDatasetIterator(LIDCDatasetIterator):
     def list_observed(self):
