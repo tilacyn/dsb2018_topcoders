@@ -145,6 +145,7 @@ class LIDCDatasetIterator(Iterator):
             mask, em = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             # mask = cv2.resize(mask, self.data_shape)
             if em is not None:
+                print(em)
                 cv2.imwrite('kek.jpg', mask[:,:,0])
                 raise NotImplementedError
             # plt.imshow(mask[:,:,0])
