@@ -149,7 +149,7 @@ class LIDCDatasetIterator(Iterator):
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
         batch_y = np.array(batch_y, dtype=np.float64)
-        if np.randint(0, 35) == 4:
+        if np.random.randint(0, 35) == 4:
             raise NotImplementedError
         return batch_x, batch_y
 
