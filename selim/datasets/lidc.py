@@ -143,7 +143,7 @@ class LIDCDatasetIterator(Iterator):
             # print('processing image: {}'.format(file_name))
             image = cv2.resize(image, self.data_shape)
             mask, em = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-            mask = cv2.resize(mask, self.data_shape)
+            # mask = cv2.resize(mask, self.data_shape)
             if em is not None:
                 cv2.imwrite('kek.jpg', mask[:,:,0])
                 raise NotImplementedError
