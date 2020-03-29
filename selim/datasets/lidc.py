@@ -41,10 +41,8 @@ def test():
         if not im_name.endswith('dcm'):
             continue
         image, dcm_ds = imread(root + '/' + im_name)
-        # if np.random.randint(2, 9) == 4:
         print(dcm_ds.SliceLocation)
         if dcm_ds.SliceLocation == -125.0:
-        # if dcm_ds.get('UID') != '1.3.6.1.4.1.14519.5.2.1.6279.6001.110383487652933113465768208719':
             make_mask(image, dcm_ds.SOPInstanceUID, nodules)
         # print(dcm_ds.get('UID'))
 
@@ -157,7 +155,10 @@ class LIDCDatasetIterator(Iterator):
 
     def create_image_ids(self):
         dcms = []
+        observed = ['0787', '0356', '0351', '0292', '0287', '0272']
         for root, _, files in os.walk(self.image_dir):
+            if root[11:15] not in observed:
+                continue
             for file in files:
                 if file.endswith('dcm'):
                     dcms.append((root + '/' + file, root))
