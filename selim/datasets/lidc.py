@@ -12,6 +12,7 @@ from functools import reduce
 
 def make_mask(image, image_id, nodules):
     height, width, depth = image.shape
+    print(image.shape)
     nodule_image = np.zeros((height, width, depth), np.uint8)
     # todo OR for all masks
     edge_map = None
@@ -31,7 +32,7 @@ def make_mask(image, image_id, nodules):
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
-    return mask, edge_map
+    return mask
 
 
 def test():
@@ -141,13 +142,13 @@ class LIDCDatasetIterator(Iterator):
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
             # print('processing image: {}'.format(file_name))
-            mask, em = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+            mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             image = cv2.resize(image, self.data_shape)
             mask = cv2.resize(mask, self.data_shape)
-            if em is not None:
-                print(em)
-                cv2.imwrite('kek.jpg', mask[:,:,0])
-                raise NotImplementedError
+            # if em is not None:
+            #     print(em)
+            #     cv2.imwrite('kek.jpg', mask[:,:,0])
+            #     raise NotImplementedError
             # plt.imshow(mask[:,:,0])
             # plt.axis('off')
             # plt.show()
