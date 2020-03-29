@@ -147,9 +147,9 @@ class LIDCDatasetIterator(Iterator):
             if em is not None:
                 cv2.imwrite('kek.jpg', mask[:,:,0])
                 raise NotImplementedError
-            plt.imshow(mask[:,:,0])
-            plt.axis('off')
-            plt.show()
+            # plt.imshow(mask[:,:,0])
+            # plt.axis('off')
+            # plt.show()
             batch_x.append(image)
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
