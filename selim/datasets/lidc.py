@@ -127,8 +127,9 @@ class LIDCDatasetIterator(Iterator):
         seed = np.uint32(time.time() * 1000)
         n = 0
         for root, _, files in os.walk(image_dir):
-            if '.dcm' in files and reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in self.list_observed()]):
-                n += 1
+            for file in files:
+                if '.dcm' in file and reduce(lambda x, y: x or y, ['IDRI-' + dir_substr in root for dir_substr in self.list_observed()]):
+                    n += 1
         print("total len: {}".format(n))
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
