@@ -142,7 +142,6 @@ def run(args):
             verbose=1,
             workers=args.num_workers)
 
-        model.fit()
 
         del model
         K.clear_session()
