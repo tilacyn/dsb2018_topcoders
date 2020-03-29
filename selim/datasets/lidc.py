@@ -22,12 +22,7 @@ def make_mask(image, image_id, nodules):
                 cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
 
 
-    if edge_map is None:
-        # print('no nodules')
-        mask = image
-    else:
-        # todo what color to fill?
-        mask = nodule_image
+    mask = nodule_image
     mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
     # print('before repeat: {}'.format(mask.shape))
     mask = np.reshape(mask, (height, width, 1))
