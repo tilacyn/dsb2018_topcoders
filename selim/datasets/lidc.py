@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 import cv2
 import pydicom as dicom
 
+from matplotlib import pyplot as plt
+
 from functools import reduce
 
 def make_mask(image, image_id, nodules):
@@ -147,6 +149,9 @@ class LIDCDatasetIterator(Iterator):
             image = cv2.resize(image, self.data_shape)
             mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             mask = cv2.resize(mask, self.data_shape)
+            plt.imshow(mask[:,:,0])
+            plt.axis('off')
+            plt.show()
             batch_x.append(image)
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
