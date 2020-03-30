@@ -140,8 +140,6 @@ class LIDCDatasetIterator(Iterator):
         batch_x = []
         batch_y = []
         print('index_array : {}'.format(index_array))
-        print(self.batch_index)
-        print(self.total_batches_seen)
         for image_index in index_array:
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
