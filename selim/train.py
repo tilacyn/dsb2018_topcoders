@@ -63,13 +63,8 @@ def run(args):
         print('Using full size images')
     folds = [int(f) for f in args.fold.split(",")]
     for fold in folds:
-        channels = 3
-        if args.multi_gpu:
-            with K.tf.device("/cpu:0"):
-                model = make_model(args.network, (None, None, 3))
-        else:
-            # model = make_model(args.network, (None, None, channels))
-            model = custom()
+        # model = make_model(args.network, (None, None, channels))
+        model = custom()
         if args.weights is None:
             print('No weights passed, training from scratch')
         else:
