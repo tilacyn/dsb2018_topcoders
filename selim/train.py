@@ -1,5 +1,6 @@
 import gc
 import cv2
+import tensorflow
 
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
@@ -27,7 +28,7 @@ from losses import make_loss, hard_dice_coef, hard_dice_coef_ch1
 from tensorflow.python.client import device_lib
 
 import tensorflow.keras.backend as K
-
+import numpy as np
 
 class ModelCheckpointMGPU(ModelCheckpoint):
     def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False,
@@ -131,8 +132,15 @@ def run(args):
 
         print(model.summary())
 
+        def gen():
+            while 1:
+                yield np.full((256, 256, 3), 0), np.full((10, 10, 2), 240)
+
+        ds = tensorflow.data.Dataset.from_generator(gen, (tensorflow.int32,  tensorflow.int32))
+
         model.fit_generator(
-            train_generator,
+            ds,
+            # train_generator,
             steps_per_epoch=args.steps_per_epoch,
             epochs=args.epochs,
             # validation_data=validation_data,
