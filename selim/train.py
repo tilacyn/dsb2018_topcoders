@@ -158,7 +158,7 @@ def run(args):
             epochs=args.epochs,
             # validation_data=validation_data,
             # validation_steps=validation_steps,
-            callbacks=callbacks,
+            # callbacks=callbacks,
             max_queue_size=5,
             verbose=1,
             workers=args.num_workers)
