@@ -101,3 +101,8 @@ def test():
     img1 = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
     img2 = cv2.imread('/Users/mkryuchkov/lung-ds/000002.jpg')
     return make_loss('bce_dice')(convert_to_tensor(img1, dtype=tf.float32), convert_to_tensor(img1, dtype=tf.float32))
+
+
+def custom_mse(y_true, y_pred):
+    true_array = y_true.unstack()
+    y_pred = y_pred
