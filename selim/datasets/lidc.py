@@ -20,6 +20,7 @@ def make_mask(image, image_id, nodules):
         for roi in nodule['roi']:
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
+                print(edge_map)
                 cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
 
 
@@ -28,7 +29,7 @@ def make_mask(image, image_id, nodules):
     # print('before repeat: {}'.format(mask.shape))
     mask = np.reshape(mask, (height, width, 1))
     mask = np.repeat(mask, 2, axis=2)
-    # cv2.imwrite('kek2.jpg', mask[:,:,0])
+    cv2.imwrite('kek2.jpg', mask[:,:,0])
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
@@ -44,7 +45,8 @@ def test():
             continue
         image, dcm_ds = imread(root + '/' + im_name)
         print(dcm_ds.SliceLocation)
-        if dcm_ds.SliceLocation == -150:
+        if dcm_ds.SliceLocation == -125:
+            print(im_name)
             make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             break
         # print(dcm_ds.get('UID'))
@@ -125,15 +127,16 @@ def parseXML(scan_path):
 class LIDCDatasetIterator(Iterator):
     def __init__(self, image_dir, batch_size):
         seed = np.uint32(time.time() * 1000)
-        n = 0
-        for root, _, files in os.walk(image_dir):
-            for file in files:
-                if '.dcm' in file and reduce(lambda x, y: x or y, ['IDRI-' + dir_substr in root for dir_substr in self.list_observed()]):
-                    n += 1
-        print("total len: {}".format(n))
+        # n = 0
+        # for root, _, files in os.walk(image_dir):
+        #     for file in files:
+        #         if '.dcm' in file and reduce(lambda x, y: x or y, ['IDRI-' + dir_substr in root for dir_substr in self.list_observed()]):
+        #             n += 1
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
+        n = len(self.image_ids)
         self.data_shape = (256, 256)
+        print("total len: {}".format(n))
         super().__init__(n, batch_size, False, seed)
 
     def _get_batches_of_transformed_samples(self, index_array):
@@ -157,11 +160,14 @@ class LIDCDatasetIterator(Iterator):
     def create_image_ids(self):
         dcms = []
         observed = self.list_observed()
-        for root, _, files in os.walk(self.image_dir):
-            if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
+        for root, folders, files in os.walk(self.image_dir):
+            if not '3000566-03192' in root:
                 continue
+            # if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
+            #     continue
             for file in files:
-                if file.endswith('dcm'):
+                # if file.endswith('dcm'):
+                if file == '000071.dcm':
                     dcms.append((root + '/' + file, root))
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
