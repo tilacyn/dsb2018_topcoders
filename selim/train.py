@@ -132,6 +132,8 @@ def run(args):
         # validation_data = LIDCValidationDatasetIterator(args.images_dir, args.batch_size)
         # validation_steps = validation_data.n
 
+        print(model.summary())
+
         model.fit_generator(
             train_generator,
             steps_per_epoch=args.steps_per_epoch,
