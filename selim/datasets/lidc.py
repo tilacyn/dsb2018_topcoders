@@ -33,8 +33,8 @@ def make_mask(image, image_id, nodules):
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
-    return mask
-
+    # return mask
+    return np.full((256, 256, 2), 240)
 
 def test():
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
