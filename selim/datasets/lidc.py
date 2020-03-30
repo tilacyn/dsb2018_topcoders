@@ -20,7 +20,7 @@ def make_mask(image, image_id, nodules):
         for roi in nodule['roi']:
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
-                print(edge_map)
+                # print(edge_map)
                 cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
 
 
