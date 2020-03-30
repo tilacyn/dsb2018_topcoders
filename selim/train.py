@@ -128,8 +128,8 @@ def run(args):
             callbacks.insert(0, lrSchedule)
         tb = TensorBoard("logs/{}_{}".format(args.network, fold))
         callbacks.append(tb)
-        validation_data = LIDCValidationDatasetIterator(args.images_dir, args.batch_size)
-        validation_steps = validation_data.n
+        # validation_data = LIDCValidationDatasetIterator(args.images_dir, args.batch_size)
+        # validation_steps = validation_data.n
 
         model.fit_generator(
             train_generator,
