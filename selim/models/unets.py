@@ -7,6 +7,9 @@ from models.xception_padding import Xception
 from resnets import ResNet101, ResNet152, ResNet50
 from resnetv2 import InceptionResNetV2Same
 
+from tensorflow.keras import layers
+from tensorflow.keras import models
+
 resnet_filename = 'ResNet-{}-model.keras.h5'
 resnet_resource = 'https://github.com/fizyr/keras-models/releases/download/v0.0.1/{}'.format(resnet_filename)
 
@@ -300,6 +303,17 @@ def inception_resnet_v2_fpn(input_shape, channels=1, activation="sigmoid"):
     else:
         x = Conv2D(channels, (1, 1), activation=activation, name="mask")(x)
     model = Model(inceresv2.input, x)
+    return model
+
+
+def custom():
+    model = models.Sequential()
+    model.add(layers.Conv2D(2, (3, 3), activation='relu', input_shape=(256, 256, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(2, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(2, (3, 3), activation='relu'))
+    model.add(layers.UpSampling2D())
     return model
 
 

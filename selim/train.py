@@ -17,6 +17,7 @@ from datasets.lidc import LIDCDatasetIterator
 from datasets.lidc import LIDCValidationDatasetIterator
 from datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
+from models.unets import custom
 
 from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import RMSprop, Adam, SGD
@@ -67,7 +68,8 @@ def run(args):
             with K.tf.device("/cpu:0"):
                 model = make_model(args.network, (None, None, 3))
         else:
-            model = make_model(args.network, (None, None, channels))
+            # model = make_model(args.network, (None, None, channels))
+            model = custom()
         if args.weights is None:
             print('No weights passed, training from scratch')
         else:
