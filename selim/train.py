@@ -132,20 +132,13 @@ def run(args):
 
         print(model.summary())
 
-        def genx():
+        def gen():
             while 1:
-                yield np.full((1, 256, 256, 3), 0)
-        def geny():
-            while 1:
-                yield np.full((1, 10, 10, 2), 240)
+                yield np.full((1, 256, 256, 3), 0), np.full((1, 10, 10, 2), 240)
 
-        objects = tensorflow.data.Dataset.from_generator(genx,
-                                                    tensorflow.int32,
-                                                    tensorflow.TensorShape([1, 256, 256, 3]))
-
-        labels = tensorflow.data.Dataset.from_generator(geny,
-                                                    tensorflow.int32,
-                                                    tensorflow.TensorShape([1, 10, 10, 2]))
+        ds = tensorflow.data.Dataset.from_generator(gen,
+                                                    (tensorflow.int32,  tensorflow.int32),
+                                                    (tensorflow.TensorShape([1, 256, 256, 3]), tensorflow.TensorShape([1, 10, 10, 2])))
 
         # model.fit_generator(
         #     ds,
@@ -159,8 +152,7 @@ def run(args):
         #     verbose=1,
         #     workers=args.num_workers)
         model.fit(
-            objects,
-            labels,
+            ds,
             # train_generator,
             steps_per_epoch=args.steps_per_epoch,
             epochs=args.epochs,
