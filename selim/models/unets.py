@@ -320,6 +320,7 @@ def custom():
     # model.add(layers.UpSampling2D())
     # model.add(layers.ZeroPadding2D(padding=(4, 4)))
     # model.add(layers.UpSampling2D())
+    # model.add(layers.)
     return model
 
 
