@@ -134,7 +134,7 @@ def run(args):
 
         def gen():
             while 1:
-                yield np.full((256, 256, 3), 0), np.full((10, 10, 2), 240)
+                yield np.full((1, 256, 256, 3), 0), np.full((1, 10, 10, 2), 240)
 
         ds = tensorflow.data.Dataset.from_generator(gen, (tensorflow.int32,  tensorflow.int32))
 
