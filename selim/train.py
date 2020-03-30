@@ -74,7 +74,7 @@ def run(args):
             weights_path = args.weights.format(fold)
             print('Loading weights from {}'.format(weights_path))
             model.load_weights(weights_path, by_name=True)
-        freeze_model(model, args.freeze_till_layer)
+        # freeze_model(model, args.freeze_till_layer)
         optimizer = RMSprop(lr=args.learning_rate)
         print('learning rate: {}'.format(args.learning_rate))
         if args.optimizer:
