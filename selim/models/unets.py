@@ -314,7 +314,7 @@ def custom():
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(2, (3, 3), activation='relu'))
     model.add(layers.UpSampling2D())
-    model.add(layers.ZeroPadding2D(4, 4))
+    model.add(layers.ZeroPadding2D(padding=(4, 4)))
     model.add(layers.UpSampling2D())
     return model
 
