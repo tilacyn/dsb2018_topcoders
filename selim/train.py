@@ -136,7 +136,9 @@ def run(args):
             while 1:
                 yield np.full((1, 256, 256, 3), 0), np.full((1, 10, 10, 2), 240)
 
-        ds = tensorflow.data.Dataset.from_generator(gen, (tensorflow.int32,  tensorflow.int32))
+        ds = tensorflow.data.Dataset.from_generator(gen,
+                                                    (tensorflow.int32,  tensorflow.int32),
+                                                    (tensorflow.TensorShape([1, 256, 256, 3]), tensorflow.TensorShape([1, 10, 10, 2])))
 
         model.fit_generator(
             ds,
