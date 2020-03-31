@@ -144,7 +144,7 @@ class LIDCDatasetIterator(Iterator):
             # print('processing image: {}'.format(file_name))
             mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             image = cv2.resize(image, self.data_shape)
-            # mask = cv2.resize(mask, self.data_shape)
+            mask = cv2.resize(mask, self.data_shape)
             batch_x.append(image)
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
