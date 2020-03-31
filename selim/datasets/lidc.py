@@ -25,13 +25,9 @@ def make_mask(image, image_id, nodules):
                 cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
                 cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    # print('before repeat: {}'.format(mask.shape))
     mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
-    cv2.imwrite('kek0.jpg', mask[:,:,0])
-    cv2.imwrite('kek1.jpg', mask[:,:,1])
-    # print('after repeat: {}'.format(mask.shape))
-    # print("mask created with nodules")
-    # print(mask.shape)
+    # cv2.imwrite('kek0.jpg', mask[:,:,0])
+    # cv2.imwrite('kek1.jpg', mask[:,:,1])
     return mask / 255
 
 def test(a):
@@ -144,6 +140,7 @@ class LIDCDatasetIterator(Iterator):
                     # print('processing image: {}'.format(file_name))
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
                     image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+                    image = np.repeat(image, 3, axis=2)
                     image = cv2.resize(image, self.data_shape)
                     mask = cv2.resize(mask, self.data_shape)
                     batch_x.append(image)
