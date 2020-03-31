@@ -135,23 +135,24 @@ class LIDCDatasetIterator(Iterator):
 
     def generator(self):
         def gen():
-            batch_x = []
-            batch_y = []
-            for image_index in [0]:
-                file_name, parent_name = self.image_ids[image_index]
-                image, dcm_ds = imread(file_name)
-                nodules = parseXML(parent_name)
-                # print('processing image: {}'.format(file_name))
-                mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-                image = cv2.resize(image, self.data_shape)
-                mask = cv2.resize(mask, self.data_shape)
-                batch_x.append(image)
-                batch_y.append(mask)
-            batch_x = np.array(batch_x, dtype=np.float64)
-            batch_y = np.array(batch_y, dtype=np.float64)
-            print(batch_x.shape)
-            print(batch_y.shape)
-            yield batch_x, batch_y
+            while 1:
+                batch_x = []
+                batch_y = []
+                for image_index in [0]:
+                    file_name, parent_name = self.image_ids[image_index]
+                    image, dcm_ds = imread(file_name)
+                    nodules = parseXML(parent_name)
+                    # print('processing image: {}'.format(file_name))
+                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+                    image = cv2.resize(image, self.data_shape)
+                    mask = cv2.resize(mask, self.data_shape)
+                    batch_x.append(image)
+                    batch_y.append(mask)
+                batch_x = np.array(batch_x, dtype=np.float64)
+                batch_y = np.array(batch_y, dtype=np.float64)
+                print(batch_x.shape)
+                print(batch_y.shape)
+                yield batch_x, batch_y
         return gen
 
     def create_image_ids(self):
