@@ -138,7 +138,7 @@ def run(args):
 
         ds = tensorflow.data.Dataset.from_generator(gen,
                                                     (tensorflow.float32,  tensorflow.float32),
-                                                    (tensorflow.TensorShape([1, 100, 100, 3]), tensorflow.TensorShape([1, 50, 50, 2])))
+                                                    (tensorflow.TensorShape([1, 256, 256, 3]), tensorflow.TensorShape([1, 10, 10, 2])))
 
         # model.fit_generator(
         #     ds,
