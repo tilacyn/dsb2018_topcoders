@@ -154,6 +154,8 @@ def run(args):
 
         print(model.predict(np.full((1, 256, 256, 3), 100), 1))
 
+        model.save
+
         del model
         K.clear_session()
         gc.collect()
