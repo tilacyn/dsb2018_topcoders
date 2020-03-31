@@ -11,10 +11,10 @@ from matplotlib import pyplot as plt
 from functools import reduce
 
 def make_mask(image, image_id, nodules):
-    height, width, depth = image.shape
+    height, width = image.shape
     # print(image.shape)
-    filled_mask = np.full((height, width, depth), 0, np.uint8)
-    contoured_mask = np.full((height, width, depth), 0, np.uint8)
+    filled_mask = np.full((height, width, 1), 0, np.uint8)
+    contoured_mask = np.full((height, width, 1), 0, np.uint8)
     # todo OR for all masks
     edge_map = None
     for nodule in nodules:
@@ -22,11 +22,9 @@ def make_mask(image, image_id, nodules):
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
                 # print(edge_map)
-                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), (255, 255, 255))
-                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=(255, 255, 255), isClosed=False)
+                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    filled_mask = cv2.cvtColor(filled_mask, cv2.COLOR_RGB2GRAY)
-    contoured_mask = cv2.cvtColor(contoured_mask, cv2.COLOR_RGB2GRAY)
     # print('before repeat: {}'.format(mask.shape))
     mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
     cv2.imwrite('kek0.jpg', mask[:,:,0])
@@ -65,7 +63,6 @@ def imread(image_path):
     ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
     image = img_2d_scaled
-    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     # cv2.imwrite('image3d.jpg', image)
     # image3d = cv2.imread('image3d.jpg')
     # print(image.shape)
