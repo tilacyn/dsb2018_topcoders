@@ -143,6 +143,7 @@ class LIDCDatasetIterator(Iterator):
                     nodules = parseXML(parent_name)
                     # print('processing image: {}'.format(file_name))
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+                    image = np.reshape(image, (image.shape[0], image.shape[1], 1))
                     image = cv2.resize(image, self.data_shape)
                     mask = cv2.resize(mask, self.data_shape)
                     batch_x.append(image)
