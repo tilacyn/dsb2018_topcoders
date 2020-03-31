@@ -33,8 +33,7 @@ def make_mask(image, image_id, nodules):
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
-    # return mask
-    return np.full((10, 10, 2), 240)
+    return mask
 
 def test():
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
@@ -127,11 +126,6 @@ def parseXML(scan_path):
 class LIDCDatasetIterator(Iterator):
     def __init__(self, image_dir, batch_size):
         seed = np.uint32(time.time() * 1000)
-        # n = 0
-        # for root, _, files in os.walk(image_dir):
-        #     for file in files:
-        #         if '.dcm' in file and reduce(lambda x, y: x or y, ['IDRI-' + dir_substr in root for dir_substr in self.list_observed()]):
-        #             n += 1
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
         n = len(self.image_ids)

@@ -140,17 +140,6 @@ def run(args):
                                                     (tensorflow.int8,  tensorflow.int8),
                                                     (tensorflow.TensorShape([1, 256, 256, 3]), tensorflow.TensorShape([1, 10, 10, 2])))
 
-        # model.fit_generator(
-        #     ds,
-        #     # train_generator,
-        #     steps_per_epoch=args.steps_per_epoch,
-        #     epochs=args.epochs,
-        #     # validation_data=validation_data,
-        #     # validation_steps=validation_steps,
-        #     callbacks=callbacks,
-        #     max_queue_size=5,
-        #     verbose=1,
-        #     workers=args.num_workers)
         model.fit(
             ds,
             # train_generator,
@@ -168,6 +157,8 @@ def run(args):
         del model
         K.clear_session()
         gc.collect()
+
+        model
 
 
 if __name__ == '__main__':
