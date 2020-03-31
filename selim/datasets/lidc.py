@@ -13,8 +13,8 @@ from functools import reduce
 def make_mask(image, image_id, nodules):
     height, width = image.shape
     # print(image.shape)
-    filled_mask = np.full((height, width, 1), 0, np.uint8)
-    contoured_mask = np.full((height, width, 1), 0, np.uint8)
+    filled_mask = np.full((height, width), 0, np.uint8)
+    contoured_mask = np.full((height, width), 0, np.uint8)
     # todo OR for all masks
     edge_map = None
     for nodule in nodules:
@@ -45,8 +45,8 @@ def test(a):
         print(dcm_ds.SliceLocation)
         if dcm_ds.SliceLocation == a:
             print(im_name)
-            make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-            break
+            return make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+            # break
         # print(dcm_ds.get('UID'))
 
     # return make_mask(image, image_id, nodules)
