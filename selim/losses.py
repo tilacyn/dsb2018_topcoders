@@ -6,6 +6,7 @@ import tensorflow as tf
 import math
 import numpy as np
 
+
 def hard_dice_coef(y_true, y_pred, smooth=1e-3):
     y_true_f = K.flatten(K.round(y_true[..., 0]))
     y_pred_f = K.flatten(K.round(y_pred[..., 0]))
@@ -42,6 +43,7 @@ def binary_crossentropy(y, p):
     # print(result)
     # raise NotImplementedError
     return result
+
 
 def double_head_loss(y_true, y_pred):
     mask_loss = dice_coef_loss_bce(y_true[..., 0], y_pred[..., 0])
@@ -106,4 +108,6 @@ def test():
 
 
 def custom_mse(y_true, y_pred):
-    return K.mean(K.square(tf.where(tf.greater(y_true, y_pred), y_pred, tf.zeros([256, 256, 2])) - y_true))
+    return 100 * K.mean(
+        K.square(tf.where(tf.greater(y_true, y_pred), y_pred, tf.zeros([256, 256, 2])) - y_true)) + K.mean(
+        K.square(y_true  - y_pred))
