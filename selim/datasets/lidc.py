@@ -153,7 +153,8 @@ class LIDCDatasetIterator(Iterator):
     def create_image_ids(self):
         dcms = []
         observed = self.list_observed()
-        files_for_training = ['000041.dcm', '000071.dcm', '000104.dcm', '00003.dcm']
+        # files_for_training = ['000041.dcm', '000071.dcm', '000104.dcm', '00003.dcm']
+        files_for_training = ['000071.dcm']
         for root, folders, files in os.walk(self.image_dir):
             if not '3000566-03192' in root:
                 continue
