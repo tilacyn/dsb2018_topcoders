@@ -13,8 +13,8 @@ from functools import reduce
 def make_mask(image, image_id, nodules):
     height, width, depth = image.shape
     # print(image.shape)
-    filled_mask = np.full((height, width, depth), 255, np.uint8)
-    contoured_mask = np.full((height, width, depth), 255, np.uint8)
+    filled_mask = np.full((height, width, depth), 0, np.uint8)
+    contoured_mask = np.full((height, width, depth), 0, np.uint8)
     # todo OR for all masks
     edge_map = None
     for nodule in nodules:
@@ -22,8 +22,8 @@ def make_mask(image, image_id, nodules):
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
                 # print(edge_map)
-                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), (0, 0, 0))
-                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=(0, 0, 0), isClosed=False)
+                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), (255, 255, 255))
+                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=(255, 255, 255), isClosed=False)
 
     filled_mask = cv2.cvtColor(filled_mask, cv2.COLOR_RGB2GRAY)
     contoured_mask = cv2.cvtColor(contoured_mask, cv2.COLOR_RGB2GRAY)
