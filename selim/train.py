@@ -163,6 +163,7 @@ def run(args):
             verbose=1,
             workers=args.num_workers)
 
+        print(model.predict(np.full((1, 256, 256, 3), 100), 1))
 
         del model
         K.clear_session()
