@@ -133,11 +133,10 @@ class LIDCDatasetIterator(Iterator):
         print("total len: {}".format(n))
         super().__init__(n, batch_size, False, seed)
 
-    def _get_batches_of_transformed_samples(self, index_array):
+    def gen(self):
         batch_x = []
         batch_y = []
-        print('index_array : {}'.format(index_array))
-        for image_index in index_array:
+        for image_index in [0]:
             file_name, parent_name = self.image_ids[image_index]
             image, dcm_ds = imread(file_name)
             nodules = parseXML(parent_name)
@@ -151,7 +150,7 @@ class LIDCDatasetIterator(Iterator):
         batch_y = np.array(batch_y, dtype=np.float64)
         print(batch_x.shape)
         print(batch_y.shape)
-        return batch_x, batch_y
+        yield batch_x, batch_y
 
     def create_image_ids(self):
         dcms = []
