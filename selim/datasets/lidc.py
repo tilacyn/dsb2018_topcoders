@@ -27,7 +27,7 @@ def make_mask(image, image_id, nodules):
 
     mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
     # cv2.imwrite('kek0.jpg', mask[:,:,0])
-    # cv2.imwrite('kek1.jpg', mask[:,:,1])
+    cv2.imwrite('kek1.jpg', mask[:,:,1])
     return mask / 255
 
 def test(a):
