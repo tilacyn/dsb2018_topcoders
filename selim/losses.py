@@ -64,7 +64,7 @@ def softmax_dice_loss(y_true, y_pred):
         y_true[..., 1], y_pred[..., 1]) * 0.2
 
 
-def make_loss(loss_name):
+def make_loss(loss_name, c=None):
     if loss_name == 'bce_dice':
         def loss(y, p):
             return dice_coef_loss_bce(y, p, dice=0.5, bce=0.5)
@@ -82,7 +82,7 @@ def make_loss(loss_name):
     elif loss_name == 'mask_contour_mask_loss':
         return mask_contour_mask_loss
     elif loss_name == 'custom_mse':
-        return custom_mse
+        return lambda x, y: custom_mse(c, x, y)
     else:
         ValueError("Unknown loss.")
 
@@ -107,7 +107,7 @@ def test():
     return make_loss('bce_dice')(convert_to_tensor(img1, dtype=tf.float32), convert_to_tensor(img1, dtype=tf.float32))
 
 
-def custom_mse(y_true, y_pred):
-    return 1e4 * K.mean(
+def custom_mse(c, y_true, y_pred):
+    return c * K.mean(
         K.square(tf.where(tf.greater(y_true, y_pred), y_pred, tf.zeros([256, 256, 2])) - y_true)) + K.mean(
         K.square(y_true  - y_pred))
