@@ -13,7 +13,8 @@ from functools import reduce
 def make_mask(image, image_id, nodules):
     height, width, depth = image.shape
     # print(image.shape)
-    nodule_image = np.zeros((height, width, depth), np.uint8)
+    filled_mask = np.zeros((height, width, depth), np.uint8)
+    contoured_mask = np.zeros((height, width, depth), np.uint8)
     # todo OR for all masks
     edge_map = None
     for nodule in nodules:
@@ -21,15 +22,15 @@ def make_mask(image, image_id, nodules):
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
                 # print(edge_map)
-                cv2.fillPoly(nodule_image, np.int32([np.array(edge_map)]), (255, 255, 255))
+                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), (255, 255, 255))
+                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=(255, 255, 255), isClosed=False)
 
-
-    mask = nodule_image
-    mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
+    filled_mask = cv2.cvtColor(filled_mask, cv2.COLOR_RGB2GRAY)
+    contoured_mask = cv2.cvtColor(contoured_mask, cv2.COLOR_RGB2GRAY)
     # print('before repeat: {}'.format(mask.shape))
-    mask = np.reshape(mask, (height, width, 1))
-    mask = np.repeat(mask, 2, axis=2)
-    cv2.imwrite('kek2.jpg', mask[:,:,0])
+    mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
+    cv2.imwrite('kek0.jpg', mask[:,:,0])
+    cv2.imwrite('kek1.jpg', mask[:,:,1])
     # print('after repeat: {}'.format(mask.shape))
     # print("mask created with nodules")
     # print(mask.shape)
@@ -150,8 +151,6 @@ class LIDCDatasetIterator(Iterator):
                     batch_y.append(mask)
                 batch_x = np.array(batch_x, dtype=np.float64)
                 batch_y = np.array(batch_y, dtype=np.float64)
-                print(batch_x.shape)
-                print(batch_y.shape)
                 yield batch_x, batch_y
         return gen
 
