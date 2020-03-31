@@ -314,7 +314,6 @@ def custom():
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(2, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(2, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D((3, 3)))
     # model.add(layers.MaxPooling2D((4, 4)))
     # model.add(layers.UpSampling2D())
