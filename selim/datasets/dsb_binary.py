@@ -229,3 +229,6 @@ class DSB2018BinaryDatasetIterator(BaseMaskDatasetIterator):
         msk = np.stack((msk0, msk1, msk2))
         msk = np.rollaxis(msk, 0, 3)
         return msk
+
+
+def

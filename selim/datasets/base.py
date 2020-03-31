@@ -112,3 +112,4 @@ class BaseMaskDatasetIterator(Iterator):
         return self._get_batches_of_transformed_samples(index_array)
 
 
+def test():
