@@ -36,7 +36,7 @@ def make_mask(image, image_id, nodules):
     # print(mask.shape)
     return mask
 
-def test():
+def test(a):
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
     nodules = parseXML('/Users/mkryuchkov/lung-ds/3000566-03192')
     image = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
@@ -45,7 +45,7 @@ def test():
             continue
         image, dcm_ds = imread(root + '/' + im_name)
         print(dcm_ds.SliceLocation)
-        if dcm_ds.SliceLocation == -125:
+        if dcm_ds.SliceLocation == a:
             print(im_name)
             make_mask(image, dcm_ds.SOPInstanceUID, nodules)
             break
@@ -139,7 +139,8 @@ class LIDCDatasetIterator(Iterator):
             while 1:
                 batch_x = []
                 batch_y = []
-                for image_index in [0]:
+                index_array = np.random.choice(self.n, self.batch_size, replace=False)
+                for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
                     nodules = parseXML(parent_name)
@@ -157,6 +158,7 @@ class LIDCDatasetIterator(Iterator):
     def create_image_ids(self):
         dcms = []
         observed = self.list_observed()
+        files_for_training = ['000041.dcm', '000071.dcm', '000104.dcm', '00003.dcm']
         for root, folders, files in os.walk(self.image_dir):
             if not '3000566-03192' in root:
                 continue
@@ -164,7 +166,7 @@ class LIDCDatasetIterator(Iterator):
             #     continue
             for file in files:
                 # if file.endswith('dcm'):
-                if file == '000071.dcm':
+                if file in files_for_training:
                     dcms.append((root + '/' + file, root))
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
