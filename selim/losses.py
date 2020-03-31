@@ -79,6 +79,8 @@ def make_loss(loss_name):
         return double_head_loss
     elif loss_name == 'mask_contour_mask_loss':
         return mask_contour_mask_loss
+    elif loss_name == 'custom_mse':
+        return custom_mse
     else:
         ValueError("Unknown loss.")
 
@@ -104,5 +106,4 @@ def test():
 
 
 def custom_mse(y_true, y_pred):
-    true_array = y_true.unstack()
-    y_pred = y_pred
+    return K.mean(K.square(tf.where(tf.greater(y_true, y_pred), y_pred, tf.zeros(tf.shape(y_pred).numpy())) - y_true))
