@@ -149,6 +149,8 @@ class LIDCDatasetIterator(Iterator):
             batch_y.append(mask)
         batch_x = np.array(batch_x, dtype=np.float64)
         batch_y = np.array(batch_y, dtype=np.float64)
+        print(batch_x.shape)
+        print(batch_y.shape)
         return batch_x, batch_y
 
     def create_image_ids(self):
