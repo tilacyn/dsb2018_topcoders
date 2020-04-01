@@ -31,10 +31,10 @@ def make_mask(image, image_id, nodules):
     cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
     cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
+    # mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
     # cv2.imwrite('kek0.jpg', mask[:,:,0])
-    cv2.imwrite('kek1.jpg', mask[:,:,1])
-    return mask / 255
+    cv2.imwrite('kek1.jpg', filled_mask)
+    return np.reshape(filled_mask, (height, width, 1)) / 255
 
 def test(a):
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
