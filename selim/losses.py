@@ -110,4 +110,4 @@ def test():
 def custom_mse(c, y_true, y_pred):
     return c * K.mean(
         K.square(tf.where(tf.greater(y_true, y_pred), y_pred, tf.zeros([256, 256, 2])) - y_true)) + K.mean(
-        K.square(y_true  - y_pred))
+        K.square(y_true - y_pred))
