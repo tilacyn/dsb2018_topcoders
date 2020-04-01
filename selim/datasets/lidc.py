@@ -12,7 +12,7 @@ from functools import reduce
 
 def make_mask(image, image_id, nodules):
     height, width = image.shape
-    print(image.shape)
+    # print(image.shape)
     filled_mask = np.full((height, width), 0, np.uint8)
     contoured_mask = np.full((height, width), 0, np.uint8)
     # todo OR for all masks
