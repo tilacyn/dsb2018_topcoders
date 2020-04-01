@@ -147,7 +147,7 @@ def resnet152_fpn(input_shape, channels=1, activation="softmax"):
     x = conv_relu(x, 64, 3, (1, 1), name="up5_conv2")
     x = Conv2D(channels, (1, 1), name="mask", kernel_initializer="he_normal")(x)
     x = Activation(activation)(x)
-    model = Model(img_input, x)
+    model = Model(Input(input_shape), x)
     return model
 
 
