@@ -1,4 +1,4 @@
-from models.unets import resnet152_fpn, resnet101_fpn, resnet50_fpn, xception_fpn,  densenet_fpn, inception_resnet_v2_fpn
+from models.unets import resnet152_fpn, resnet101_fpn, resnet50_fpn, xception_fpn,  densenet_fpn, inception_resnet_v2_fpn, custom
 
 
 def make_model(network, input_shape):
@@ -24,5 +24,7 @@ def make_model(network, input_shape):
         return xception_fpn(input_shape, channels=1, activation="sigmoid")
     elif network == 'resnet50_2':
         return resnet50_fpn(input_shape, channels=1, activation="sigmoid")
+    elif network == 'custom_resnet':
+        return custom(input_shape, channels=1, activation="sigmoid")
     else:
         raise ValueError('unknown network ' + network)
