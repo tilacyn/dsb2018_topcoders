@@ -9,15 +9,12 @@ import numpy as np
 from tensorflow.keras.applications import imagenet_utils
 from tensorflow.keras.preprocessing.image import Iterator, load_img, img_to_array
 
-from params import args
-
 
 class BaseMaskDatasetIterator(Iterator):
     def __init__(self,
                  images_dir,
                  masks_dir,
                  labels_dir,
-                 image_ids,
                  crop_shape,
                  preprocessing_function,
                  random_transformer=None,
@@ -33,7 +30,6 @@ class BaseMaskDatasetIterator(Iterator):
         self.images_dir = images_dir
         self.masks_dir = masks_dir
         self.labels_dir = labels_dir
-        self.image_ids = image_ids
         self.image_name_template = image_name_template
         self.mask_template = mask_template
         self.label_template = label_template
@@ -70,8 +66,7 @@ class BaseMaskDatasetIterator(Iterator):
             mask_path = os.path.join(self.masks_dir, mask_name)
             mask = cv2.imread(mask_path, cv2.IMREAD_COLOR)
             label = cv2.imread(os.path.join(self.labels_dir, self.label_template.format(id=id)), cv2.IMREAD_UNCHANGED)
-            if args.use_full_masks:
-                mask[...,0] = (label > 0) * 255
+            mask[...,0] = (label > 0) * 255
             if self.crop_shape is not None:
                 crop_mask, crop_image, crop_label = self.augment_and_crop_mask_image(mask, image, label, id, self.crop_shape)
                 data = self.random_transformer(image=np.array(crop_image, "uint8"), mask=np.array(crop_mask, "uint8"))
@@ -111,5 +106,3 @@ class BaseMaskDatasetIterator(Iterator):
             index_array = next(self.index_generator)
         return self._get_batches_of_transformed_samples(index_array)
 
-
-def test():
