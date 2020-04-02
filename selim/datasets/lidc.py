@@ -20,7 +20,7 @@ def make_mask(image, image_id, nodules):
         for roi in nodule['roi']:
             if roi['sop_uid'] == image_id:
                 edge_map = roi['xy']
-                filled_mask = cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
                 # cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
     # mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
