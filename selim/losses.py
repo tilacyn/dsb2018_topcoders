@@ -47,8 +47,8 @@ def binary_crossentropy(y, p):
 
 def double_head_loss(y_true, y_pred):
     mask_loss = dice_coef_loss_bce(y_true[..., 0], y_pred[..., 0])
-    contour_loss = dice_coef_loss_bce(y_true[..., 1], y_pred[..., 1])
-    return mask_loss + contour_loss
+    # contour_loss = dice_coef_loss_bce(y_true[..., 1], y_pred[..., 1])
+    return mask_loss
 
 
 def mask_contour_mask_loss(y_true, y_pred):
