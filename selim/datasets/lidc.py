@@ -158,6 +158,13 @@ class LIDCDatasetIterator(Iterator):
             #     continue
             # if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
             #     continue
+            has_xml = False
+            for file in files:
+                if 'xml' in file:
+                    has_xml = True
+                    break
+            if not has_xml:
+                continue
             for file in files:
                 if file.endswith('dcm'):
                 # if file in files_for_training:
