@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 
 from functools import reduce
 
-def make_mask(image, image_id, nodules, a):
+def make_mask(image, image_id, nodules):
     height, width = image.shape
     # print(image.shape)
     filled_mask = np.full((height, width), 0, np.uint8)
@@ -24,7 +24,7 @@ def make_mask(image, image_id, nodules, a):
     #             cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
     #             cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    filled_mask = (image > a) * 255
+    filled_mask = (image > 10) * 255
 
     # cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
     # cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
