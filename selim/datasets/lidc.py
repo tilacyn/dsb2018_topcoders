@@ -73,11 +73,14 @@ def parseXML(scan_path):
     [{nodule_id, roi:[{z, sop_uid, xy:[[x1,y1],[x2,y2],...]}]}]
     '''
     file_list = os.listdir(scan_path)
+    xml_file = None
     for file in file_list:
         if '.' in file and file.split('.')[1] == 'xml':
             xml_file = file
             break
     prefix = "{http://www.nih.gov}"
+    if xml_file is None:
+        print('SCAN PATH: {}'.format(scan_path))
     tree = ET.parse(scan_path + '/' + xml_file)
     root = tree.getroot()
     readingSession_list = root.findall(prefix + "readingSession")
