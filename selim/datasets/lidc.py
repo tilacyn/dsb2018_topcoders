@@ -16,22 +16,16 @@ def make_mask(image, image_id, nodules):
     filled_mask = np.full((height, width), 0, np.uint8)
     contoured_mask = np.full((height, width), 0, np.uint8)
     # todo OR for all masks
-    edge_map = None
-    # for nodule in nodules:
-    #     for roi in nodule['roi']:
-    #         if roi['sop_uid'] == image_id:
-    #             edge_map = roi['xy']
-    #             cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
-    #             cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
-
-    filled_mask = (image > 10) * 255
-
-    # cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
-    # cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
+    for nodule in nodules:
+        for roi in nodule['roi']:
+            if roi['sop_uid'] == image_id:
+                edge_map = roi['xy']
+                filled_mask = cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+                # cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
     # mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
-    cv2.imwrite('kek0.jpg', image)
-    cv2.imwrite('kek1.jpg', filled_mask)
+    # cv2.imwrite('kek0.jpg', image)
+    # cv2.imwrite('kek1.jpg', filled_mask)
     return np.reshape(filled_mask, (height, width, 1)) / 255
 
 def test(a, b):
@@ -79,7 +73,6 @@ def parseXML(scan_path):
     [{nodule_id, roi:[{z, sop_uid, xy:[[x1,y1],[x2,y2],...]}]}]
     '''
     file_list = os.listdir(scan_path)
-    print
     for file in file_list:
         if '.' in file and file.split('.')[1] == 'xml':
             xml_file = file
@@ -160,8 +153,8 @@ class LIDCDatasetIterator(Iterator):
         for root, folders, files in os.walk(self.image_dir):
             # if not '3000566-03192' in root:
             #     continue
-            if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
-                continue
+            # if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
+            #     continue
             for file in files:
                 if file.endswith('dcm'):
                 # if file in files_for_training:
