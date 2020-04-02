@@ -17,22 +17,18 @@ def make_mask(image, image_id, nodules):
     contoured_mask = np.full((height, width), 0, np.uint8)
     # todo OR for all masks
     edge_map = None
-    # for nodule in nodules:
-    #     for roi in nodule['roi']:
-    #         if roi['sop_uid'] == image_id:
-    #             # edge_map = roi['xy']
-    #             edge_map = [[100, 300], [300, 300], [300, 100], [100, 100]]
-    #             # print(edge_map)
-    #             cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
-    #             cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
+    for nodule in nodules:
+        for roi in nodule['roi']:
+            if roi['sop_uid'] == image_id:
+                edge_map = roi['xy']
+                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    edge_map = [[100, 300], [300, 300], [300, 100], [100, 100]]
-    # print(edge_map)
     cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
     cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
     # mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
-    # cv2.imwrite('kek0.jpg', mask[:,:,0])
+    cv2.imwrite('kek0.jpg', image)
     cv2.imwrite('kek1.jpg', filled_mask)
     return np.reshape(filled_mask, (height, width, 1)) / 255
 
@@ -70,9 +66,6 @@ def imread(image_path):
     # print(image.shape)
     return image, ds
 
-def kek():
-    image3d, ds = imread('/Users/mkryuchkov/Downloads/000500.dcm')
-    return image3d
 
 def parseXML(scan_path):
     '''
