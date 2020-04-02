@@ -10,29 +10,31 @@ from matplotlib import pyplot as plt
 
 from functools import reduce
 
-def make_mask(image, image_id, nodules):
+def make_mask(image, image_id, nodules, a):
     height, width = image.shape
     # print(image.shape)
     filled_mask = np.full((height, width), 0, np.uint8)
     contoured_mask = np.full((height, width), 0, np.uint8)
     # todo OR for all masks
     edge_map = None
-    for nodule in nodules:
-        for roi in nodule['roi']:
-            if roi['sop_uid'] == image_id:
-                edge_map = roi['xy']
-                cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
-                cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
+    # for nodule in nodules:
+    #     for roi in nodule['roi']:
+    #         if roi['sop_uid'] == image_id:
+    #             edge_map = roi['xy']
+    #             cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+    #             cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
-    cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
-    cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
+    filled_mask = (image > a) * 255
+
+    # cv2.fillPoly(filled_mask, np.int32([np.array(edge_map)]), 255)
+    # cv2.polylines(contoured_mask, np.int32([np.array(edge_map)]), color=255, isClosed=False)
 
     # mask = np.swapaxes(np.array([contoured_mask, filled_mask]), 0, 2)
     cv2.imwrite('kek0.jpg', image)
     cv2.imwrite('kek1.jpg', filled_mask)
     return np.reshape(filled_mask, (height, width, 1)) / 255
 
-def test(a):
+def test(a, b):
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
     nodules = parseXML('/Users/mkryuchkov/lung-ds/3000566-03192')
     image = cv2.imread('/Users/mkryuchkov/lung-ds/000001.jpg')
@@ -43,7 +45,7 @@ def test(a):
         print(dcm_ds.SliceLocation)
         if dcm_ds.SliceLocation == a:
             print(im_name)
-            return make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+            return make_mask(image, dcm_ds.SOPInstanceUID, nodules, b)
             # break
         # print(dcm_ds.get('UID'))
 
