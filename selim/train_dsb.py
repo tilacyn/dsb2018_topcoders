@@ -7,7 +7,7 @@ cv2.ocl.setUseOpenCL(False)
 import os
 from params import args
 
-os.environ['CUDA_VISIBLE_DEVICES'] = args_set.gpu
+os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
 from aug.transforms import aug_mega_hardcore
 
