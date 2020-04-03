@@ -14,9 +14,7 @@ from aug.transforms import aug_mega_hardcore
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.utils import multi_gpu_model
 
-from datasets.lidc import LIDCDatasetIterator
-from datasets.lidc import LIDCValidationDatasetIterator
-from datasets.simple_ds import SimpleDatasetIterator
+from datasets.dsb_binary import DSB2018BinaryDataset
 from models.model_factory import make_model
 from models.unets import custom
 
