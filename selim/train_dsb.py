@@ -1,27 +1,34 @@
 import gc
 import cv2
+import tensorflow
+
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
 import os
-from params import args
+from params import args as args_set
 
-os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+os.environ['CUDA_VISIBLE_DEVICES'] = args_set.gpu
 
 from aug.transforms import aug_mega_hardcore
 
-from keras.losses import binary_crossentropy
-from keras.utils.training_utils import multi_gpu_model
+from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.utils import multi_gpu_model
 
-from datasets.dsb_binary import DSB2018BinaryDataset
+from datasets.lidc import LIDCDatasetIterator
+from datasets.lidc import LIDCValidationDatasetIterator
+from datasets.simple_ds import SimpleDatasetIterator
 from models.model_factory import make_model
+from models.unets import custom
 
-
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
-from keras.optimizers import RMSprop, Adam, SGD
+from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
+from tensorflow.keras.optimizers import RMSprop, Adam, SGD
 
 from losses import make_loss, hard_dice_coef, hard_dice_coef_ch1
 
-import keras.backend as K
+from tensorflow.python.client import device_lib
+
+import tensorflow.keras.backend as K
+import numpy as np
 
 
 class ModelCheckpointMGPU(ModelCheckpoint):
