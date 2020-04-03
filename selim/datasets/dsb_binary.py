@@ -91,10 +91,11 @@ class DSB2018BinaryDataset:
         index = 0
         print('generating ids')
         images = os.listdir(self.images_dir)
-        for i in range(3000):
-            if self.image_name_template.format(i) in images:
-                train_ids[index] = i
-                index += 1
+        # for i in range(3000):
+        for image in images:
+            i = int(image.split('.')[0])
+            train_ids[index] = i
+            index += 1
         print('finished generating ids')
         return train_ids, {}
 
