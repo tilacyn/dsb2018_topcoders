@@ -96,7 +96,7 @@ class DSB2018BinaryDataset:
                 train_ids[index] = i
                 index += 1
         print('finished generating ids')
-        return train_ids, None
+        return train_ids, {}
 
 class DSB2018BinaryDatasetIterator(BaseMaskDatasetIterator):
 
