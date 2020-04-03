@@ -38,7 +38,7 @@ class BaseMaskDatasetIterator(Iterator):
         self.mask_template = mask_template
         self.label_template = label_template
         self.random_transformer = random_transformer
-        self.crop_shape = crop_shape
+        self.crop_shape = None
         self.preprocessing_function = preprocessing_function
         self.padding = padding
         self.grayscale_mask = grayscale_mask
