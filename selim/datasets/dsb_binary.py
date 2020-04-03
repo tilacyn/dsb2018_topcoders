@@ -89,10 +89,13 @@ class DSB2018BinaryDataset:
     def generate_ids(self):
         train_ids = {}
         index = 0
-        for i in range(30000):
-            if self.image_name_template.format(i) in os.listdir(self.images_dir):
+        print('generating ids')
+        images = os.listdir(self.images_dir)
+        for i in range(3000):
+            if self.image_name_template.format(i) in images:
                 train_ids[index] = i
                 index += 1
+        print('finished generating ids')
         return train_ids, None
 
 class DSB2018BinaryDatasetIterator(BaseMaskDatasetIterator):
