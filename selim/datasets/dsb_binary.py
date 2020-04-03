@@ -28,7 +28,7 @@ class DSB2018BinaryDataset:
         self.images_dir = images_dir
         self.masks_dir = masks_dir
         self.labels_dir = labels_dir
-        self.image_name_template = "{id}.png"
+        self.image_name_template = "{}.png"
         np.random.seed(seed)
         self.train_ids, self.val_ids = self.generate_ids()
         print("Found {} train images".format(len(self.train_ids)))
