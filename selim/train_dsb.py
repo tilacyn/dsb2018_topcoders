@@ -30,7 +30,8 @@ import numpy as np
 
 
 class ModelCheckpointMGPU(ModelCheckpoint):
-    def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1):
+    def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False,
+                 save_weights_only=False, mode='auto', period=1):
         self.original_model = original_model
         super().__init__(filepath, monitor, verbose, save_best_only, save_weights_only, mode, period)
 
@@ -38,7 +39,9 @@ class ModelCheckpointMGPU(ModelCheckpoint):
         self.model = self.original_model
         super().on_epoch_end(epoch, logs)
 
+
 gpus = [x.name for x in device_lib.list_local_devices() if x.name[:4] == '/gpu']
+
 
 def freeze_model(model, freeze_before_layer):
     if freeze_before_layer == "ALL":
@@ -51,6 +54,7 @@ def freeze_model(model, freeze_before_layer):
                 freeze_before_layer_index = i
         for l in model.layers[:freeze_before_layer_index + 1]:
             l.trainable = False
+
 
 def main():
     if args.crop_size:
@@ -82,32 +86,36 @@ def main():
                 optimizer = Adam(lr=args.learning_rate, decay=float(args.decay), amsgrad=True)
             elif args.optimizer == 'sgd':
                 optimizer = SGD(lr=args.learning_rate, momentum=0.9, nesterov=True, decay=float(args.decay))
-        dataset = DSB2018BinaryDataset(args.images_dir, args.masks_dir, args.labels_dir, fold, args.n_folds, seed=args.seed)
+        dataset = DSB2018BinaryDataset(args.images_dir, args.masks_dir, args.labels_dir, fold, args.n_folds,
+                                       seed=args.seed)
         random_transform = aug_mega_hardcore()
-        train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function, random_transform, batch_size=args.batch_size)
+        train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function,
+                                                  random_transform, batch_size=args.batch_size)
         # val_generator = dataset.val_generator(args.preprocessing_function, batch_size=1)
-        best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network,fold)
+        best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network, fold)
 
         best_model = ModelCheckpointMGPU(model, filepath=best_model_file, monitor='val_loss',
-                                     verbose=1,
-                                     mode='min',
-                                     period=args.save_period,
-                                     save_best_only=True,
-                                     save_weights_only=True)
-        last_model_file = '{}/last_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network,fold)
+                                         verbose=1,
+                                         mode='min',
+                                         period=args.save_period,
+                                         save_best_only=True,
+                                         save_weights_only=True)
+        last_model_file = '{}/last_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network, fold)
 
         last_model = ModelCheckpointMGPU(model, filepath=last_model_file, monitor='val_loss',
-                                     verbose=1,
-                                     mode='min',
-                                     period=args.save_period,
-                                     save_best_only=False,
-                                     save_weights_only=True)
+                                         verbose=1,
+                                         mode='min',
+                                         period=args.save_period,
+                                         save_best_only=False,
+                                         save_weights_only=True)
         if args.multi_gpu:
             model = multi_gpu_model(model, len(gpus))
-        model.compile(loss=make_loss(args.loss_function),
-                      optimizer=optimizer,
-                      metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef])
-
+        model.compile(
+            # loss=make_loss(args.loss_function),
+            loss='mse',
+            optimizer=optimizer
+            # metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef])
+        )
         def schedule_steps(epoch, steps):
             for step in steps:
                 if step[1] > epoch:
