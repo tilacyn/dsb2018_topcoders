@@ -93,7 +93,8 @@ class BaseMaskDatasetIterator(Iterator):
                 mask = np.pad(mask, ((y0, y1), (x0, x1), (0, 0)), 'reflect')
                 batch_x.append(image)
                 mask = self.transform_mask(mask, image)
-
+                print('image.shape: {}'.format(image.shape))
+                print('mask.shape: {}'.format(mask.shape))
                 batch_y.append(mask)
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
