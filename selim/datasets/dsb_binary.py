@@ -41,7 +41,7 @@ class DSB2018BinaryDataset:
             image_ids,
             crop_shape,
             preprocessing_function,
-            random_transformer,
+            False,
             batch_size,
             shuffle=shuffle,
             image_name_template="{id}.png",
