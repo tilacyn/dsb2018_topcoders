@@ -8,7 +8,7 @@ from skimage.filters import median
 from skimage.morphology import dilation, watershed, square, erosion
 from tqdm import tqdm
 
-from base import BaseMaskDatasetIterator
+from datasets.base import BaseMaskDatasetIterator
 # from params import args
 
 
