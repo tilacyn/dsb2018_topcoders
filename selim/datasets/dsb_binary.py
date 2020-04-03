@@ -28,6 +28,7 @@ class DSB2018BinaryDataset:
         self.images_dir = images_dir
         self.masks_dir = masks_dir
         self.labels_dir = labels_dir
+        self.image_name_template = "{id}.png"
         np.random.seed(seed)
         self.train_ids, self.val_ids = self.generate_ids()
         print("Found {} train images".format(len(self.train_ids)))
@@ -57,34 +58,42 @@ class DSB2018BinaryDataset:
     def val_generator(self, preprocessing_function='torch', batch_size=1):
         return self.get_generator(self.val_ids, None, preprocessing_function, None, batch_size, False)
 
+    # def generate_ids(self):
+    #     df = pd.read_csv(args.folds_csv)
+    #     polosa_id = '193ffaa5272d5c421ae02130a64d98ad120ec70e4ed97a72cdcd4801ce93b066'
+    #     galaxy_ids = ['538b7673d507014d83af238876e03617396b70fe27f525f8205a4a96900fbb8e',
+    #                   'a102535b0e88374bea4a1cfd9ee7cb3822ff54f4ab2a9845d428ec22f9ee2288',
+    #                   'cb4df20a83b2f38b394c67f1d9d4aef29f9794d5345da3576318374ec3a11490',
+    #                   'f29fd9c52e04403cd2c7d43b6fe2479292e53b2f61969d25256d2d2aca7c6a81']
+    #     all_folds_ids = galaxy_ids + [polosa_id]
+    #     train_groups = df[(df['fold'] != self.fold) | (df['img_id'] == polosa_id)| (df['source'] == 'wikimedia')| (df['img_id'].isin(all_folds_ids))]['cluster'].values
+    #     all_train_ids = df[(df['fold'] != self.fold) | (df['img_id'] == polosa_id)  | (df['source'] == 'wikimedia') | (df['img_id'].isin(all_folds_ids))]['img_id'].values
+    #
+    #     train_ids = []
+    #     for i in range(len(all_train_ids)):
+    #         rep = 1
+    #         if train_groups[i] in ['b', 'd', 'e', 'm']:
+    #             rep = 2
+    #         elif train_groups[i] in ['c']:
+    #             rep = 2
+    #         elif train_groups[i] in ['n']:
+    #             rep = 3
+    #         if all_train_ids[i] == polosa_id:
+    #             rep = 4
+    #         train_ids.extend([all_train_ids[i]] * rep)
+    #     train_ids = np.asarray(train_ids)
+    #
+    #     val_ids = df[(df['fold'] == self.fold)]['img_id'].values
+    #     return train_ids, val_ids
+
     def generate_ids(self):
-        df = pd.read_csv(args.folds_csv)
-        polosa_id = '193ffaa5272d5c421ae02130a64d98ad120ec70e4ed97a72cdcd4801ce93b066'
-        galaxy_ids = ['538b7673d507014d83af238876e03617396b70fe27f525f8205a4a96900fbb8e',
-                      'a102535b0e88374bea4a1cfd9ee7cb3822ff54f4ab2a9845d428ec22f9ee2288',
-                      'cb4df20a83b2f38b394c67f1d9d4aef29f9794d5345da3576318374ec3a11490',
-                      'f29fd9c52e04403cd2c7d43b6fe2479292e53b2f61969d25256d2d2aca7c6a81']
-        all_folds_ids = galaxy_ids + [polosa_id]
-        train_groups = df[(df['fold'] != self.fold) | (df['img_id'] == polosa_id)| (df['source'] == 'wikimedia')| (df['img_id'].isin(all_folds_ids))]['cluster'].values
-        all_train_ids = df[(df['fold'] != self.fold) | (df['img_id'] == polosa_id)  | (df['source'] == 'wikimedia') | (df['img_id'].isin(all_folds_ids))]['img_id'].values
-
-        train_ids = []
-        for i in range(len(all_train_ids)):
-            rep = 1
-            if train_groups[i] in ['b', 'd', 'e', 'm']:
-                rep = 2
-            elif train_groups[i] in ['c']:
-                rep = 2
-            elif train_groups[i] in ['n']:
-                rep = 3
-            if all_train_ids[i] == polosa_id:
-                rep = 4
-            train_ids.extend([all_train_ids[i]] * rep)
-        train_ids = np.asarray(train_ids)
-
-        val_ids = df[(df['fold'] == self.fold)]['img_id'].values
-        return train_ids, val_ids
-
+        train_ids = {}
+        index = 0
+        for i in range(30000):
+            if self.image_name_template.format(i) in os.listdir(self.images_dir):
+                train_ids[index] = i
+                index += 1
+        return train_ids, None
 
 class DSB2018BinaryDatasetIterator(BaseMaskDatasetIterator):
 
