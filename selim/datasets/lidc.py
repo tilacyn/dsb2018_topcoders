@@ -144,7 +144,7 @@ class LIDCDatasetIterator(Iterator):
                     batch_x.append(image)
                     batch_y.append(mask * 255)
                     print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
-                    print('greater than 240: {}'.format(np.count_nonzero(mask < 240)))
+                    print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
                 batch_x = np.array(batch_x, dtype=np.uint8)
                 batch_y = np.array(batch_y, dtype=np.uint8)
                 yield batch_x, batch_y

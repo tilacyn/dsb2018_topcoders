@@ -93,7 +93,7 @@ class BaseMaskDatasetIterator(Iterator):
                 batch_x.append(image)
                 mask = self.transform_mask(mask, image)
                 print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
-                print('greater than 240: {}'.format(np.count_nonzero(mask < 240)))
+                print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
                 batch_y.append(mask)
         batch_x = np.array(batch_x, dtype="float32")
         batch_y = np.array(batch_y, dtype="float32")
