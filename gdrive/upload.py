@@ -22,7 +22,7 @@ def upload_files(drive, folder_name, parent_id):
 
 def create_folder(drive, folder_name, parent_id=None):
     if parent_id is None:
-        parent_id = '1-g-FObnR0QXMQ1xSjGmdqH5ChouC22od'
+        parent_id = '1YkGHMk7hPFwwjwKWhn-yf8fCJysd6e4p'
     # else:
     #     file_list = drive.ListFile(
     #         {'q': ''1_Draj6AqxNXotxv_vfPHI - QkDtyHu2qf' in parents and trashed=false'}).GetList()
@@ -57,18 +57,25 @@ def main():
     drive = GoogleDrive(gauth)
     # filename = 'kek'
 
-    lidc_path = '/home/maksim/lung-ds/LIDC-IDRI'
+    mrt_path = '/Users/mkryuchkov/mrt-ds'
 
-    lidc_parts = os.listdir(lidc_path)[:10]
+    # mrt_parts = ['image', 'mask']
+    mrt_parts = ['mask']
 
-    for lidc_part in lidc_parts:
-        part_folder_id = create_folder(drive, lidc_part)
-        for sub_folder in os.listdir(lidc_path + '/' + lidc_part):
-            sub_folder_id = create_folder(drive, sub_folder, part_folder_id)
-            for sub2_folder in os.listdir(lidc_path + '/' + lidc_part + '/' + sub_folder):
-                sub2_folder_id = create_folder(drive, sub2_folder, sub_folder_id)
-                upload_files(drive, lidc_path + '/' + lidc_part + '/' + sub_folder + '/' + sub2_folder, sub2_folder_id)
+    for part in mrt_parts:
+        print('processing another part')
+        part_folder_id = create_folder(drive, part)
+        upload_files(drive, os.path.join(mrt_path, part), part_folder_id)
 
+
+import shutil
+
+
+def zip_files():
+    lidc_path = ''
+    lidc_parts = os.listdir(lidc_path)
+    for part in lidc_parts:
+        shutil.make_archive('{}.zip'.format(part), 'zip', os.path.join(lidc_path, part))
 
 
 if __name__ == '__main__':
