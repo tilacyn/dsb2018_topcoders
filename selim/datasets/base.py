@@ -61,6 +61,7 @@ class BaseMaskDatasetIterator(Iterator):
         batch_x = []
         batch_y = []
 
+        print(index_array)
         for batch_index, image_index in enumerate(index_array):
             id = self.image_ids[image_index]
             img_name = self.image_name_template.format(id=id)

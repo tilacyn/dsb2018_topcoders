@@ -17,6 +17,8 @@ class DSB2018BinaryDataset:
                  images_dir,
                  masks_dir,
                  labels_dir,
+                 val_images_dir,
+                 val_masks_dir,
                  fold=0,
                  fold_num=4,
                  seed=777,
@@ -26,11 +28,14 @@ class DSB2018BinaryDataset:
         self.fold_num = fold_num
         self.seed = seed
         self.images_dir = images_dir
+        self.val_images_dir = val_images_dir
+        self.val_masks_dir = val_masks_dir
         self.masks_dir = masks_dir
         self.labels_dir = labels_dir
         self.image_name_template = "{}.png"
         np.random.seed(seed)
-        self.train_ids, self.val_ids = self.generate_ids()
+        self.train_ids = self.generate_ids(self.images_dir)
+        self.val_ids = self.generate_ids(self.val_images_dir)
         print("Found {} train images".format(len(self.train_ids)))
         print("Found {} val images".format(len(self.val_ids)))
 
@@ -86,11 +91,11 @@ class DSB2018BinaryDataset:
     #     val_ids = df[(df['fold'] == self.fold)]['img_id'].values
     #     return train_ids, val_ids
 
-    def generate_ids(self):
+    def generate_ids(self, dir):
         train_ids = {}
         index = 0
         print('generating ids')
-        images = os.listdir(self.images_dir)
+        images = os.listdir(dir)
         # for i in range(3000):
         for image in images:
             i = int(image.split('.')[0])

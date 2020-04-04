@@ -86,12 +86,15 @@ def main():
                 optimizer = Adam(lr=args.learning_rate, decay=float(args.decay), amsgrad=True)
             elif args.optimizer == 'sgd':
                 optimizer = SGD(lr=args.learning_rate, momentum=0.9, nesterov=True, decay=float(args.decay))
-        dataset = DSB2018BinaryDataset(args.images_dir, args.masks_dir, args.labels_dir, fold, args.n_folds,
+
+        val_images_dir = '/content/drive/My Drive/dsb2018_topcoders/selim/image_val'
+        val_masks_dir = '/content/drive/My Drive/dsb2018_topcoders/selim/mask_val'
+        dataset = DSB2018BinaryDataset(args.images_dir, args.masks_dir, args.labels_dir, val_images_dir, val_masks_dir, fold, args.n_folds,
                                        seed=args.seed)
         random_transform = aug_mega_hardcore()
         train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function,
                                                   random_transform, batch_size=args.batch_size)
-        # val_generator = dataset.val_generator(args.preprocessing_function, batch_size=1)
+        val_generator = dataset.val_generator(args.preprocessing_function, batch_size=1)
         best_model_file = '{}/best_{}{}_fold{}.h5'.format(args.models_dir, args.alias, args.network, fold)
 
         best_model = ModelCheckpointMGPU(model, filepath=best_model_file, monitor='val_loss',
@@ -111,8 +114,8 @@ def main():
         if args.multi_gpu:
             model = multi_gpu_model(model, len(gpus))
         model.compile(
-            # loss=make_loss(args.loss_function),
-            loss='mse',
+            loss=make_loss(args.loss_function),
+            # loss='mse',
             optimizer=optimizer
             # metrics=[binary_crossentropy, hard_dice_coef_ch1, hard_dice_coef])
         )
@@ -135,15 +138,15 @@ def main():
         steps_per_epoch = len(dataset.train_ids) / args.batch_size + 1
         if args.steps_per_epoch > 0:
             steps_per_epoch = args.steps_per_epoch
-        # validation_data = val_generator
-        # validation_steps = len(dataset.val_ids)
+        validation_data = val_generator
+        validation_steps = len(dataset.val_ids)
 
         model.fit_generator(
             train_generator,
             steps_per_epoch=steps_per_epoch,
             epochs=args.epochs,
-            # validation_data=validation_data,
-            # validation_steps=validation_steps,
+            validation_data=validation_data,
+            validation_steps=validation_steps,
             callbacks=callbacks,
             max_queue_size=5,
             verbose=1,
