@@ -89,7 +89,12 @@ def main():
 
         val_images_dir = '/content/drive/My Drive/dsb2018_topcoders/selim/image_val'
         val_masks_dir = '/content/drive/My Drive/dsb2018_topcoders/selim/mask_val'
-        dataset = DSB2018BinaryDataset(args.images_dir, args.masks_dir, args.labels_dir, val_images_dir, val_masks_dir, fold, args.n_folds,
+        dataset = DSB2018BinaryDataset(images_dir=args.images_dir,
+                                       masks_dir=args.masks_dir,
+                                       val_images_dir=val_images_dir,
+                                       val_masks_dir=val_masks_dir,
+                                       fold=fold,
+                                       n_folds=args.n_folds,
                                        seed=args.seed)
         random_transform = aug_mega_hardcore()
         train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function,

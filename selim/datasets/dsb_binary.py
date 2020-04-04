@@ -16,7 +16,6 @@ class DSB2018BinaryDataset:
     def __init__(self,
                  images_dir,
                  masks_dir,
-                 labels_dir,
                  val_images_dir,
                  val_masks_dir,
                  fold=0,
@@ -31,7 +30,6 @@ class DSB2018BinaryDataset:
         self.val_images_dir = val_images_dir
         self.val_masks_dir = val_masks_dir
         self.masks_dir = masks_dir
-        self.labels_dir = labels_dir
         self.image_name_template = "{}.png"
         np.random.seed(seed)
         self.train_ids = self.generate_ids(self.images_dir)
@@ -102,7 +100,7 @@ class DSB2018BinaryDataset:
             train_ids[index] = i
             index += 1
         print('finished generating ids')
-        return train_ids, {}
+        return train_ids
 
 class DSB2018BinaryDatasetIterator(BaseMaskDatasetIterator):
 
