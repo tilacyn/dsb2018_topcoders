@@ -31,7 +31,7 @@ import numpy as np
 
 class ModelCheckpointMGPU(ModelCheckpoint):
     def __init__(self, original_model, filepath, monitor='val_loss', verbose=0, save_best_only=False,
-                 save_weights_only=False, mode='auto', period=1):
+                 save_weights_only=False, mode='auto', period=100):
         self.original_model = original_model
         super().__init__(filepath, monitor, verbose, save_best_only, save_weights_only, mode, period)
 
