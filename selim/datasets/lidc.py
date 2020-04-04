@@ -121,16 +121,16 @@ class LIDCDatasetIterator(Iterator):
         self.image_ids = self.create_image_ids()
         n = len(self.image_ids)
         self.val_len = val_len
-        self.index_array = np.arange(n)
-        np.random.shuffle(self.index_array)
-        self.val_index_array = self.index_array[:val_len]
-        self.index_array = self.index_array[val_len:]
+        self.index_list = np.arange(n)
+        np.random.shuffle(self.index_list)
+        self.val_index_array = self.index_list[:val_len]
+        self.index_list = self.index_list[val_len:]
         self.val_i = 0
         self.train_i = 0
 
         self.data_shape = (256, 256)
         print("total len: {}".format(n))
-        print("train index array: {}".format(len(self.index_array)))
+        print("train index array: {}".format(len(self.index_list)))
         print("val index array: {}".format(len(self.val_index_array)))
         super().__init__(n, batch_size, False, seed)
 
@@ -140,9 +140,8 @@ class LIDCDatasetIterator(Iterator):
                 batch_x = []
                 batch_y = []
                 next_i = self.train_i + self.batch_size
-                print(len(self.image_ids))
-                index_array = self.index_array[self.train_i: next_i]
-                self.train_i = next_i % len(self.index_array)
+                index_array = self.index_list[self.train_i: next_i]
+                self.train_i = next_i % len(self.index_list)
                 print('train index array', index_array)
                 print('train_i', self.train_i)
                 for image_index in index_array:
