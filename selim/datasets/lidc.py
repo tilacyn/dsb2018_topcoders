@@ -130,6 +130,8 @@ class LIDCDatasetIterator(Iterator):
 
         self.data_shape = (256, 256)
         print("total len: {}".format(n))
+        print("train index array: {}".format(len(self.index_array)))
+        print("val index array: {}".format(len(self.val_index_array)))
         super().__init__(n, batch_size, False, seed)
 
     def generator(self):
