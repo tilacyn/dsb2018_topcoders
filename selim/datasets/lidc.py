@@ -142,7 +142,7 @@ class LIDCDatasetIterator(Iterator):
                     mask = cv2.resize(mask, self.data_shape)
                     mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
                     batch_x.append(image)
-                    batch_y.append(mask)
+                    batch_y.append(mask * 255)
                 batch_x = np.array(batch_x, dtype=np.uint8)
                 batch_y = np.array(batch_y, dtype=np.uint8)
                 yield batch_x, batch_y
