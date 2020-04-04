@@ -94,7 +94,7 @@ def main():
                                        val_images_dir=val_images_dir,
                                        val_masks_dir=val_masks_dir,
                                        fold=fold,
-                                       n_folds=args.n_folds,
+                                       fold_num=args.n_folds,
                                        seed=args.seed)
         random_transform = aug_mega_hardcore()
         train_generator = dataset.train_generator((args.crop_size, args.crop_size), args.preprocessing_function,
