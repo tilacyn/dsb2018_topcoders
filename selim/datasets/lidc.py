@@ -142,8 +142,8 @@ class LIDCDatasetIterator(Iterator):
                 next_i = self.train_i + self.batch_size
                 index_array = self.index_list[self.train_i: next_i]
                 self.train_i = next_i % len(self.index_list)
-                print('train index array', index_array)
-                print('train_i', self.train_i)
+                # print('train index array', index_array)
+                # print('train_i', self.train_i)
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
@@ -173,8 +173,8 @@ class LIDCDatasetIterator(Iterator):
                 next_i = self.val_i + self.batch_size
                 index_array = self.val_index_array[self.val_i: next_i]
                 self.val_i = next_i % len(self.val_index_array)
-                print('val index array', index_array)
-                print('val_i', self.val_i)
+                # print('val index array', index_array)
+                # print('val_i', self.val_i)
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
