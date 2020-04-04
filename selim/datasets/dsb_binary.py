@@ -38,10 +38,10 @@ class DSB2018BinaryDataset:
         print("Found {} train images".format(len(self.train_ids)))
         print("Found {} val images".format(len(self.val_ids)))
 
-    def get_generator(self, image_ids, crop_shape, preprocessing_function='torch', random_transformer=None, batch_size=16, shuffle=True):
+    def get_generator(self, images_dir, masks_dir, image_ids, crop_shape, preprocessing_function='torch', random_transformer=None, batch_size=16, shuffle=True):
         return DSB2018BinaryDatasetIterator(
-            self.images_dir,
-            self.masks_dir,
+            images_dir,
+            masks_dir,
             self.labels_dir,
             image_ids,
             crop_shape,
@@ -57,10 +57,10 @@ class DSB2018BinaryDataset:
         )
 
     def train_generator(self, crop_shape=(256, 256), preprocessing_function='torch', random_transformer=None, batch_size=16):
-        return self.get_generator(self.train_ids, crop_shape, preprocessing_function, random_transformer, batch_size, True)
+        return self.get_generator(self.images_dir, self.masks_dir, self.train_ids, crop_shape, preprocessing_function, random_transformer, batch_size, True)
 
     def val_generator(self, preprocessing_function='torch', batch_size=1):
-        return self.get_generator(self.val_ids, None, preprocessing_function, None, batch_size, False)
+        return self.get_generator(self.val_images_dir, self.val_masks_dir, self.val_ids, None, preprocessing_function, None, batch_size, False)
 
     # def generate_ids(self):
     #     df = pd.read_csv(args.folds_csv)
