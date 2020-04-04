@@ -115,11 +115,19 @@ def parseXML(scan_path):
 
 
 class LIDCDatasetIterator(Iterator):
-    def __init__(self, image_dir, batch_size):
+    def __init__(self, image_dir, batch_size, val_len):
         seed = np.uint32(time.time() * 1000)
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
         n = len(self.image_ids)
+        self.val_len = val_len
+        self.index_array = np.arange(n)
+        np.random.shuffle(self.index_array)
+        self.val_index_array = self.index_array[:val_len]
+        self.index_array = self.index_array[val_len:]
+        self.val_i = 0
+        self.train_i = 0
+
         self.data_shape = (256, 256)
         print("total len: {}".format(n))
         super().__init__(n, batch_size, False, seed)
@@ -129,7 +137,42 @@ class LIDCDatasetIterator(Iterator):
             while 1:
                 batch_x = []
                 batch_y = []
-                index_array = np.random.choice(self.n, self.batch_size, replace=False)
+                next_i = self.train_i + self.batch_size
+                index_array = self.index_array[self.train_i: next_i]
+                self.train_i = next_i % len(self.index_array)
+                print('train index array', index_array)
+                print('train_i', self.train_i)
+                for image_index in index_array:
+                    file_name, parent_name = self.image_ids[image_index]
+                    image, dcm_ds = imread(file_name)
+                    nodules = parseXML(parent_name)
+                    # print('processing image: {}'.format(file_name))
+                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+                    image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+                    image = np.repeat(image, 3, axis=2)
+                    image = cv2.resize(image, self.data_shape)
+                    mask = cv2.resize(mask, self.data_shape)
+                    mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
+                    batch_x.append(image)
+                    batch_y.append(mask)
+                    # print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
+                    # print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
+                    #
+                batch_x = np.array(batch_x, dtype=np.uint8)
+                batch_y = np.array(batch_y, dtype=np.uint8)
+                yield batch_x, batch_y
+        return gen
+
+    def val_generator(self):
+        def gen():
+            while 1:
+                batch_x = []
+                batch_y = []
+                next_i = self.val_i + self.batch_size
+                index_array = self.val_index_array[self.val_i: next_i]
+                self.val_i = next_i % len(self.val_index_array)
+                print('val index array', index_array)
+                print('val_i', self.val_i)
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
