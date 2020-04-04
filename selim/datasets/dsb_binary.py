@@ -98,8 +98,8 @@ class DSB2018BinaryDataset:
         for image in images:
             i = int(image.split('.')[0])
             if i == 1681:
-                print(image, images)
-                raise ValueError('kek')
+                print(image)
+                # raise ValueError('kek')
             train_ids[index] = i
             index += 1
         print('finished generating ids')
