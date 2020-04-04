@@ -140,6 +140,7 @@ class LIDCDatasetIterator(Iterator):
                 batch_x = []
                 batch_y = []
                 next_i = self.train_i + self.batch_size
+                print(len(self.image_ids))
                 index_array = self.index_array[self.train_i: next_i]
                 self.train_i = next_i % len(self.index_array)
                 print('train index array', index_array)
