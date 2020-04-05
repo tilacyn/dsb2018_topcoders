@@ -153,8 +153,11 @@ class LIDCDatasetIterator(Iterator):
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
-                    if image.shape == (2022, 2022):
-                        image = np.pad(image, ((13, 13),  (13, 13)), constant_values=0)
+                    h, w = image.shape
+                    if 2022 == h or 2022 == w:
+                        hpad = (2048 - h) // 2
+                        wpad = (2048 - w) // 2
+                        image = np.pad(image, ((hpad, hpad),  (wpad, wpad)), constant_values=0)
                     nodules = parseXML(parent_name)
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
                     image_parts, mask_parts = self.split(image, mask)
