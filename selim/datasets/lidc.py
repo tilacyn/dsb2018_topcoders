@@ -241,8 +241,6 @@ def create_index(image_dir):
             continue
         print('extending with {}'.format(root))
         dcms.extend(get_files_with_nodules(parseXML(root), root))
-        if len(dcms) > 100:
-            break
     print('total training ds len: {}'.format(len(dcms)))
     with open("index.json", "w") as write_file:
         json.dump(dcms, write_file)
