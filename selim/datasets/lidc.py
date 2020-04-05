@@ -159,6 +159,7 @@ class LIDCDatasetIterator(Iterator):
                     for i in range(2):
                         image = image_parts[i]
                         mask = image_parts[i]
+                        cv2.imwrite(dcm_ds.SOPInstanceUID + '.png', mask)
                         image = np.reshape(image, (image.shape[0], image.shape[1], 1))
                         image = np.repeat(image, 3, axis=2)
                         image = cv2.resize(image, self.data_shape)
