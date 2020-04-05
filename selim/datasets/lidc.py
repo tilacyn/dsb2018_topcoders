@@ -130,7 +130,7 @@ class LIDCDatasetIterator(Iterator):
     def train_generator(self):
         def index_inc_function():
             prev = self.train_i
-            self.train_i += self.batch_size
+            self.train_i += self.batch_size / 2
             return prev, self.train_i
 
         return self.generator(index_inc_function, self.index_list)
@@ -138,7 +138,7 @@ class LIDCDatasetIterator(Iterator):
     def val_generator(self):
         def index_inc_function():
             prev = self.val_i
-            self.val_i += self.batch_size
+            self.val_i += self.batch_size / 2
             return prev, self.val_i
 
         return self.generator(index_inc_function, self.val_index_array)
