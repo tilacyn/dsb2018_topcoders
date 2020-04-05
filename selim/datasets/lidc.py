@@ -121,6 +121,9 @@ class LIDCDatasetIterator(Iterator):
         self.grid_size = 4
         self.parts_number_to_include = parts_number_to_include
 
+        self.non_zero_masks = 0
+        self.all_masks = 0
+
         self.data_shape = data_shape
         print("total len: {}".format(n))
         print("train index array: {}".format(len(self.index_list)))
@@ -164,7 +167,11 @@ class LIDCDatasetIterator(Iterator):
                     for i in range(2):
                         image = image_parts[i]
                         mask = mask_parts[i]
-                        cv2.imwrite(dcm_ds.SOPInstanceUID + '.png', mask * 255)
+                        # cv2.imwrite(dcm_ds.SOPInstanceUID + '.png', mask * 255)
+                        if mask.max() != 0:
+                            self.non_zero_masks += 1
+                        self.all_masks += 1
+                        print('non zero masks percentage: {}'.format(self.non_zero_masks / self.all_masks))
                         image = np.reshape(image, (image.shape[0], image.shape[1], 1))
                         image = np.repeat(image, 3, axis=2)
                         image = cv2.resize(image, self.data_shape)
@@ -181,7 +188,6 @@ class LIDCDatasetIterator(Iterator):
     def split(self, image, mask):
         h, w = image.shape
         gs = h // self.grid_size
-        print(image.shape)
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         max_part_idx = np.argmax([part.max() for part in mask_parts])
@@ -189,8 +195,6 @@ class LIDCDatasetIterator(Iterator):
         max_mask = mask_parts[max_part_idx]
 
         print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
-
-        # print(max_part_idx)
 
         return [image_parts[max_part_idx], image_parts[rand_idx]], [max_mask,
                                                                     mask_parts[
