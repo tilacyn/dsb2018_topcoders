@@ -179,17 +179,16 @@ class LIDCDatasetIterator(Iterator):
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         max_part_idx = np.argmax([part.max() for part in mask_parts])
-        randx = np.random.randint(4)
-        randy = np.random.randint(4)
+        rand_idx = np.random.randint(16)
         max_mask = mask_parts[max_part_idx]
 
         print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
 
-        print(max_part_idx)
+        # print(max_part_idx)
 
-        return [image_parts[max_part_idx], image_parts[randx, randy]], [max_mask,
-                                                                        mask_parts[
-                                                                            randx, randy]]
+        return [image_parts[max_part_idx], image_parts[rand_idx]], [max_mask,
+                                                                    mask_parts[
+                                                                        rand_idx]]
 
     def create_image_ids(self):
         dcms = []
