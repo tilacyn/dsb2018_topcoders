@@ -180,8 +180,11 @@ class LIDCDatasetIterator(Iterator):
         max_part_idx = np.argmax([part.max() for part in mask_parts])
         randx = np.random.randint(4)
         randy = np.random.randint(4)
+        max_mask = mask_parts[max_part_idx]
 
-        return [image_parts[max_part_idx], image_parts[randx, randy]], [mask_parts[max_part_idx],
+        print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
+
+        return [image_parts[max_part_idx], image_parts[randx, randy]], [max_mask,
                                                                         mask_parts[
                                                                             randx, randy]]
 
