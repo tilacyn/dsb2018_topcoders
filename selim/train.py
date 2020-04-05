@@ -12,7 +12,10 @@ os.environ['CUDA_VISIBLE_DEVICES'] = args_set.gpu
 from aug.transforms import aug_mega_hardcore
 
 from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.losses import S
 from tensorflow.keras.utils import multi_gpu_model
+
+from tensorflow.losses import
 
 from datasets.lidc import LIDCDatasetIterator
 from datasets.lidc import LIDCValidationDatasetIterator

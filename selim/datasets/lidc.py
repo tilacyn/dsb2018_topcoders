@@ -6,9 +6,6 @@ import xml.etree.ElementTree as ET
 import cv2
 import pydicom as dicom
 
-from matplotlib import pyplot as plt
-
-from functools import reduce
 
 def make_mask(image, image_id, nodules):
     height, width = image.shape
@@ -27,6 +24,7 @@ def make_mask(image, image_id, nodules):
     # cv2.imwrite('kek0.jpg', image)
     # cv2.imwrite('kek1.jpg', filled_mask)
     return np.reshape(filled_mask, (height, width, 1)) / 255
+
 
 def test(a, b):
     root = '/Users/mkryuchkov/lung-ds/3000566-03192'
@@ -50,16 +48,9 @@ def imread(image_path):
     ds = dicom.dcmread(image_path)
     img = ds.pixel_array
     img_2d = img.astype(float)
-
-    ## Step 2. Rescaling grey scale between 0-255
     img_2d_scaled = (np.maximum(img_2d, 0) / img_2d.max()) * 255.0
-
-    ## Step 3. Convert to uint
     img_2d_scaled = np.uint8(img_2d_scaled)
     image = img_2d_scaled
-    # cv2.imwrite('image3d.jpg', image)
-    # image3d = cv2.imread('image3d.jpg')
-    # print(image.shape)
     return image, ds
 
 
@@ -115,7 +106,7 @@ def parseXML(scan_path):
 
 
 class LIDCDatasetIterator(Iterator):
-    def __init__(self, image_dir, batch_size, val_len):
+    def __init__(self, image_dir, batch_size, val_len, data_shape=(64, 64), grid_size=1, parts_number_to_include=1):
         seed = np.uint32(time.time() * 1000)
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
@@ -127,85 +118,76 @@ class LIDCDatasetIterator(Iterator):
         self.index_list = self.index_list[val_len:]
         self.val_i = 0
         self.train_i = 0
+        self.grid_size = 4
+        self.parts_number_to_include = parts_number_to_include
 
-        self.data_shape = (256, 256)
+        self.data_shape = self.data_shape
         print("total len: {}".format(n))
         print("train index array: {}".format(len(self.index_list)))
         print("val index array: {}".format(len(self.val_index_array)))
         super().__init__(n, batch_size, False, seed)
 
-    def generator(self):
-        def gen():
-            while 1:
-                batch_x = []
-                batch_y = []
-                next_i = self.train_i + self.batch_size
-                index_array = self.index_list[self.train_i: next_i]
-                self.train_i = next_i % len(self.index_list)
-                # print('train index array', index_array)
-                # print('train_i', self.train_i)
-                for image_index in index_array:
-                    file_name, parent_name = self.image_ids[image_index]
-                    image, dcm_ds = imread(file_name)
-                    nodules = parseXML(parent_name)
-                    # print('processing image: {}'.format(file_name))
-                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-                    image = np.reshape(image, (image.shape[0], image.shape[1], 1))
-                    image = np.repeat(image, 3, axis=2)
-                    image = cv2.resize(image, self.data_shape)
-                    mask = cv2.resize(mask, self.data_shape)
-                    mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
-                    batch_x.append(image)
-                    batch_y.append(mask)
-                    # print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
-                    # print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
-                    #
-                batch_x = np.array(batch_x, dtype=np.uint8)
-                batch_y = np.array(batch_y, dtype=np.uint8)
-                yield batch_x, batch_y
-        return gen
+    def train_generator(self):
+        def index_inc_function():
+            prev = self.train_i
+            self.train_i += self.batch_size
+            return prev, self.train_i
+
+        return self.generator(index_inc_function, self.index_list)
 
     def val_generator(self):
+        def index_inc_function():
+            prev = self.val_i
+            self.val_i += self.batch_size
+            return prev, self.val_i
+
+        return self.generator(index_inc_function, self.val_index_array)
+
+    def generator(self, index_inc_function, index_list):
         def gen():
             while 1:
                 batch_x = []
                 batch_y = []
-                next_i = self.val_i + self.batch_size
-                index_array = self.val_index_array[self.val_i: next_i]
-                self.val_i = next_i % len(self.val_index_array)
-                # print('val index array', index_array)
-                # print('val_i', self.val_i)
+                index, next_index = index_inc_function()
+                index_array = index_list[index: next_index]
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
                     nodules = parseXML(parent_name)
-                    # print('processing image: {}'.format(file_name))
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-                    image = np.reshape(image, (image.shape[0], image.shape[1], 1))
-                    image = np.repeat(image, 3, axis=2)
-                    image = cv2.resize(image, self.data_shape)
-                    mask = cv2.resize(mask, self.data_shape)
-                    mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
-                    batch_x.append(image)
-                    batch_y.append(mask)
-                    # print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
-                    # print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
-                    #
+                    image_parts, mask_parts = self.split(image, mask)
+                    for i in range(2):
+                        image = image_parts[i]
+                        mask = image_parts[i]
+                        image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+                        image = np.repeat(image, 3, axis=2)
+                        image = cv2.resize(image, self.data_shape)
+                        mask = cv2.resize(mask, self.data_shape)
+                        mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
+                        batch_x.append(image)
+                        batch_y.append(mask)
                 batch_x = np.array(batch_x, dtype=np.uint8)
                 batch_y = np.array(batch_y, dtype=np.uint8)
                 yield batch_x, batch_y
+
         return gen
+
+    def split(self, image, mask):
+        h, w = image.shape
+        gs = self.grid_size
+        image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        max_part_idx = np.argmax([part.max() for part in mask_parts])
+        randx = np.random.randint(4)
+        randy = np.random.randint(4)
+
+        return [image_parts[max_part_idx], image_parts[randx, randy]], [mask_parts[max_part_idx],
+                                                                        mask_parts[
+                                                                            randx, randy]]
 
     def create_image_ids(self):
         dcms = []
-        observed = self.list_observed()
-        # files_for_training = ['000041.dcm', '000071.dcm', '000104.dcm', '00003.dcm']
-        # files_for_training = ['000071.dcm']
         for root, folders, files in os.walk(self.image_dir):
-            # if not '3000566-03192' in root:
-            #     continue
-            # if not reduce(lambda x, y: x or y, [dir_substr in root for dir_substr in observed]):
-            #     continue
             has_xml = False
             for file in files:
                 if 'xml' in file:
@@ -215,20 +197,9 @@ class LIDCDatasetIterator(Iterator):
                 continue
             for file in files:
                 if file.endswith('dcm'):
-                # if file in files_for_training:
                     dcms.append((root + '/' + file, root))
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
-
-    def list_observed(self):
-        return ['0787', '0356', '0351', '0292', '0287', '0272', '0560', '0509', '0502', '0499',  '0480', '0404']
-
-
-class LIDCValidationDatasetIterator(LIDCDatasetIterator):
-    def list_observed(self):
-        return ['0941', '0848', '0796']
-
-
