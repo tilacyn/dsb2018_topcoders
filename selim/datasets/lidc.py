@@ -8,6 +8,8 @@ import pydicom as dicom
 from os.path import join as opjoin
 import json
 
+from tqdm import tqdm
+
 
 def make_mask(image, image_id, nodules):
     height, width = image.shape
@@ -229,7 +231,7 @@ class LIDCDatasetIterator(Iterator):
 
 def create_index(image_dir):
     dcms = []
-    for root, folders, files in os.walk(image_dir):
+    for root, folders, files in tqdm(os.walk(image_dir)):
         xml_file = None
         for file in files:
             if 'xml' in file:
