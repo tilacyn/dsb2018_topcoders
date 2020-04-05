@@ -175,6 +175,7 @@ class LIDCDatasetIterator(Iterator):
     def split(self, image, mask):
         h, w = image.shape
         gs = self.grid_size
+        print(image.shape)
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         max_part_idx = np.argmax([part.max() for part in mask_parts])
