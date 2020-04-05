@@ -153,12 +153,14 @@ class LIDCDatasetIterator(Iterator):
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
+                    if image.shape == (2022, 2022):
+                        image = np.pad(image, ((13, 13),  (13, 13)), constant_values=0)
                     nodules = parseXML(parent_name)
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
                     image_parts, mask_parts = self.split(image, mask)
                     for i in range(2):
                         image = image_parts[i]
-                        mask = image_parts[i]
+                        mask = mask_parts[i]
                         cv2.imwrite(dcm_ds.SOPInstanceUID + '.png', mask)
                         image = np.reshape(image, (image.shape[0], image.shape[1], 1))
                         image = np.repeat(image, 3, axis=2)
