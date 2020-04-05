@@ -5,6 +5,7 @@ import os
 import xml.etree.ElementTree as ET
 import cv2
 import pydicom as dicom
+from os.path import join as opjoin
 
 
 def make_mask(image, image_id, nodules):
@@ -24,6 +25,21 @@ def make_mask(image, image_id, nodules):
     # cv2.imwrite('kek0.jpg', image)
     # cv2.imwrite('kek1.jpg', filled_mask)
     return np.reshape(filled_mask, (height, width, 1)) / 255
+
+def get_files_with_nodules(nodules, root):
+    files = os.listdir(root)
+    image_ids_with_nodules = set()
+    for nodule in nodules:
+        for roi in nodule['roi']:
+            image_ids_with_nodules.add(roi['sop_uid'])
+    result = []
+    for file in files:
+        if not file.endswith('dcm'):
+            continue
+        _, ds = imread(opjoin(root, file))
+        if ds.SOPInstanceUID in image_ids_with_nodules:
+            result.append(file)
+    return result
 
 
 def test(a, b):
@@ -203,16 +219,14 @@ class LIDCDatasetIterator(Iterator):
     def create_image_ids(self):
         dcms = []
         for root, folders, files in os.walk(self.image_dir):
-            has_xml = False
+            xml_file = None
             for file in files:
                 if 'xml' in file:
-                    has_xml = True
+                    xml_file = file
                     break
-            if not has_xml:
+            if xml_file is None:
                 continue
-            for file in files:
-                if file.endswith('dcm'):
-                    dcms.append((root + '/' + file, root))
+            dcms.extend(get_files_with_nodules(parseXML(root), root))
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
