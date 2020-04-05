@@ -174,7 +174,7 @@ class LIDCDatasetIterator(Iterator):
 
     def split(self, image, mask):
         h, w = image.shape
-        gs = self.grid_size
+        gs = h // self.grid_size
         print(image.shape)
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
@@ -185,7 +185,7 @@ class LIDCDatasetIterator(Iterator):
 
         print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
 
-        print(image_parts[max_part_idx].shape)
+        print(max_part_idx)
 
         return [image_parts[max_part_idx], image_parts[randx, randy]], [max_mask,
                                                                         mask_parts[
