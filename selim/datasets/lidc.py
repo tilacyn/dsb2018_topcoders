@@ -121,7 +121,7 @@ class LIDCDatasetIterator(Iterator):
         self.grid_size = 4
         self.parts_number_to_include = parts_number_to_include
 
-        self.data_shape = self.data_shape
+        self.data_shape = data_shape
         print("total len: {}".format(n))
         print("train index array: {}".format(len(self.index_list)))
         print("val index array: {}".format(len(self.val_index_array)))
