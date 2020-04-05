@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import cv2
 import pydicom as dicom
 from os.path import join as opjoin
+import json
 
 
 def make_mask(image, image_id, nodules):
@@ -232,3 +233,25 @@ class LIDCDatasetIterator(Iterator):
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm
         return image_ids
+
+
+def create_index(image_dir):
+    dcms = []
+    for root, folders, files in os.walk(image_dir):
+        xml_file = None
+        for file in files:
+            if 'xml' in file:
+                xml_file = file
+                break
+        if xml_file is None:
+            continue
+        print('extending with {}'.format(root))
+        dcms.extend(get_files_with_nodules(parseXML(root), root))
+    print('total training ds len: {}'.format(len(dcms)))
+    with open("index.json", "w") as write_file:
+        json.dump(dcms, write_file)
+
+
+def lol():
+    with open("index.json", "w") as write_file:
+        json.dump([5, 6, 7], write_file)
