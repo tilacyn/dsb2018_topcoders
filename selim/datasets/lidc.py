@@ -39,7 +39,7 @@ def get_files_with_nodules(nodules, root):
             continue
         _, ds = imread(opjoin(root, file))
         if ds.SOPInstanceUID in image_ids_with_nodules:
-            result.append(file)
+            result.append(opjoin(root, file))
     return result
 
 
@@ -218,16 +218,8 @@ class LIDCDatasetIterator(Iterator):
                                                                         rand_idx]]
 
     def create_image_ids(self):
-        dcms = []
-        for root, folders, files in os.walk(self.image_dir):
-            xml_file = None
-            for file in files:
-                if 'xml' in file:
-                    xml_file = file
-                    break
-            if xml_file is None:
-                continue
-            dcms.extend(get_files_with_nodules(parseXML(root), root))
+        with open("index.json", "r") as read_file:
+            dcms = json.load(read_file)
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
@@ -247,6 +239,8 @@ def create_index(image_dir):
             continue
         print('extending with {}'.format(root))
         dcms.extend(get_files_with_nodules(parseXML(root), root))
+        if len(dcms) > 100:
+            break
     print('total training ds len: {}'.format(len(dcms)))
     with open("index.json", "w") as write_file:
         json.dump(dcms, write_file)
