@@ -156,7 +156,7 @@ class LIDCDatasetIterator(Iterator):
                     mask = cv2.resize(mask, self.data_shape)
                     mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
                     batch_x.append(image)
-                    batch_y.append(mask)
+                    batch_y.append(mask * 5)
                     # print('less    than 260: {}'.format(np.count_nonzero(mask < 260)))
                     # print('greater than 240: {}'.format(np.count_nonzero(mask > 240)))
                     #
