@@ -225,7 +225,7 @@ class LIDCDatasetIterator(Iterator):
         image_ids = {}
         print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
-            image_ids[i] = dcm, ''.join(dcm.split('/')[:-1])
+            image_ids[i] = dcm, '/'.join(dcm.split('/')[:-1])
         return image_ids
 
 
