@@ -199,7 +199,7 @@ class LIDCDatasetIterator(Iterator):
                             self.non_zero_masks += 1
                         self.all_masks += 1
                         # print('non zero masks percentage: {}'.format(self.non_zero_masks / self.all_masks))
-                        image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+                        # image = np.reshape(image, (image.shape[0], image.shape[1], 1))
                         zeros = np.zeros([image.shape[0], image.shape[1]])
                         image = [image, zeros, zeros]
                         image = np.swapaxes(image, 0, 2)
