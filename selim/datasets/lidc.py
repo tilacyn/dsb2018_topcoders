@@ -131,10 +131,10 @@ class LIDCDatasetIterator(Iterator):
         self.image_ids = self.create_image_ids()
         n = len(self.image_ids)
         self.val_len = val_len
-        self.index_list = np.arange(n)
-        np.random.shuffle(self.index_list)
-        self.val_index_array = self.index_list[:val_len]
-        self.index_list = self.index_list[val_len:]
+        self.train_index_list = np.arange(n)
+        np.random.shuffle(self.train_index_list)
+        self.val_index_list = self.train_index_list[:val_len]
+        self.train_index_list = self.train_index_list[val_len:]
         self.val_i = 0
         self.train_i = 0
         self.grid_size = 4
@@ -145,25 +145,33 @@ class LIDCDatasetIterator(Iterator):
 
         self.data_shape = data_shape
         print("total len: {}".format(n))
-        print("train index array: {}".format(len(self.index_list)))
-        print("val index array: {}".format(len(self.val_index_array)))
+        print("train index array: {}".format(len(self.train_index_list)))
+        print("val index array: {}".format(len(self.val_index_list)))
         super().__init__(n, batch_size, False, seed)
 
     def train_generator(self):
         def index_inc_function():
             prev = self.train_i
             self.train_i += self.batch_size // 2
+            if self.train_i >= len(self.train_index_list):
+                np.random.shuffle(self.train_index_list)
+                prev = 0
+                self.train_i = self.batch_size // 2
             return prev, self.train_i
 
-        return self.generator(index_inc_function, self.index_list)
+        return self.generator(index_inc_function, self.train_index_list)
 
     def val_generator(self):
         def index_inc_function():
             prev = self.val_i
             self.val_i += self.batch_size // 2
+            if self.val_i >= len(self.val_index_list):
+                np.random.shuffle(self.val_index_list)
+                prev = 0
+                self.val_i = self.batch_size // 2
             return prev, self.val_i
 
-        return self.generator(index_inc_function, self.val_index_array)
+        return self.generator(index_inc_function, self.val_index_list)
 
     def generator(self, index_inc_function, index_list):
         def gen():
@@ -205,6 +213,8 @@ class LIDCDatasetIterator(Iterator):
         return gen
 
     def split(self, image, mask):
+        if self.grid_size == 1:
+            return [image, image], [mask, mask]
         h, w = image.shape
         gs = h // self.grid_size
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
