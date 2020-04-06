@@ -137,7 +137,7 @@ class LIDCDatasetIterator(Iterator):
         self.train_index_list = self.train_index_list[val_len:]
         self.val_i = 0
         self.train_i = 0
-        self.grid_size = 4
+        self.grid_size = grid_size
         self.parts_number_to_include = parts_number_to_include
 
         self.non_zero_masks = 0
