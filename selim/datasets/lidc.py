@@ -199,11 +199,11 @@ class LIDCDatasetIterator(Iterator):
                             self.non_zero_masks += 1
                         self.all_masks += 1
                         # print('non zero masks percentage: {}'.format(self.non_zero_masks / self.all_masks))
-                        # image = np.reshape(image, (image.shape[0], image.shape[1], 1))
-                        zeros = np.zeros([image.shape[0], image.shape[1]])
-                        image = [image, zeros, zeros]
-                        image = np.swapaxes(image, 0, 2)
-                        # image = np.repeat(image, 3, axis=2)
+                        # zeros = np.zeros([image.shape[0], image.shape[1]])
+                        # image = [image, zeros, zeros]
+                        # image = np.swapaxes(image, 0, 2)
+                        image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+                        image = np.repeat(image, 3, axis=2)
                         image = cv2.resize(image, self.data_shape)
                         mask = cv2.resize(mask, self.data_shape)
                         mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
@@ -222,15 +222,12 @@ class LIDCDatasetIterator(Iterator):
         gs = h // self.grid_size
         image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
-        max_part_idx = np.argmax([part.max() for part in mask_parts])
-        rand_idx = np.random.randint(16)
+        max_part_idx = np.argmax([np.count_nonzero(part > 0) for part in mask_parts])
         max_mask = mask_parts[max_part_idx]
 
         # print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
 
-        return [image_parts[max_part_idx], image_parts[rand_idx]], [max_mask,
-                                                                    mask_parts[
-                                                                        rand_idx]]
+        return [image_parts[max_part_idx], image], [max_mask, mask]
 
     def create_image_ids(self):
         with open("index.json", "r") as read_file:
