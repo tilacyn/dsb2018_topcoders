@@ -224,10 +224,11 @@ class LIDCDatasetIterator(Iterator):
         mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
         max_part_idx = np.argmax([np.count_nonzero(part > 0) for part in mask_parts])
         max_mask = mask_parts[max_part_idx]
+        random_idx = np.random.randint(self.grid_size * self.grid_size)
 
         # print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
 
-        return [image_parts[max_part_idx], image], [max_mask, mask]
+        return [image_parts[max_part_idx], image_parts[random_idx]], [max_mask, mask[random_idx]]
 
     def create_image_ids(self):
         with open("index.json", "r") as read_file:
