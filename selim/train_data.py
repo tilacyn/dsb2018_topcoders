@@ -45,7 +45,7 @@ class TrainData:
         random_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
         model_file_name = '{}_{}_{}_{}.h5'.format(self.model_name, self.epochs, self.grid_size, random_string)
         self.model_file_name = model_file_name
-        # model.save(opjoin(self.nn_models_dir, model_file_name))
+        model.save(opjoin(self.nn_models_dir, model_file_name))
 
         if MODELS_JSON not in os.listdir(self.nn_models_dir):
             records = []
