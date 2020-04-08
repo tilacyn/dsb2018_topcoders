@@ -1,0 +1,42 @@
+[
+ {
+  "Model Name": "m",
+  "Epochs": "e",
+  "Loss": "l",
+  "Loss Value": "l",
+  "Validation Dataset Length": "v",
+  "Validation Steps": "v",
+  "Grid Size": "g",
+  "Recall": null,
+  "Specificity": null,
+  "Training Finished at": "2020-04-08 16:39:46.606268",
+  "Metrics Calculated at": "None"
+ },
+ {
+  "Model Name": "m",
+  "Epochs": "e",
+  "Loss": "l",
+  "Loss Value": "l",
+  "Validation Dataset Length": "v",
+  "Validation Steps": "v",
+  "Grid Size": "g",
+  "Recall": null,
+  "Specificity": null,
+  "Training Finished at": "2020-04-08 16:39:46.606268",
+  "Metrics Calculated at": "None"
+ },
+ {
+  "Model Name": "m",
+  "Epochs": "e",
+  "Loss": "l",
+  "Loss Value": "l",
+  "Validation Dataset Length": "v",
+  "Validation Steps": "v",
+  "Grid Size": "g",
+  "Recall": null,
+  "Specificity": null,
+  "Training Finished at": "2020-04-08 17:20:54.180018",
+  "Metrics Calculated at": "None",
+  "Model Filename": "m_e_g_onjdmmlpai.h5"
+ }
+]
