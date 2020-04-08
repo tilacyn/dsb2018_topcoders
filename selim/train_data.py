@@ -50,10 +50,10 @@ class TrainData:
         if MODELS_JSON not in os.listdir(self.nn_models_dir):
             records = []
         else:
-            with open(MODELS_JSON, "r") as read_file:
+            with open(opjoin(self.nn_models_dir, MODELS_JSON), "r") as read_file:
                 records = json.load(read_file)
         records.append(self.to_dict())
-        with open(MODELS_JSON, "w") as write_file:
+        with open(opjoin(self.nn_models_dir, MODELS_JSON), "w") as write_file:
             json.dump(records, write_file, indent=1)
 
     def add_metrics(self, recall=None, spec=None):
