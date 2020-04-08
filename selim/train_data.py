@@ -34,11 +34,13 @@ class TrainData:
         self.nn_models_dir = nn_models_dir
         if train_finish_timestamp is None:
             self.train_finish_timestamp = datetime.datetime.now()
+        else:
+            self.train_finish_timestamp = train_finish_timestamp
         self.metric_eval_timestamp = metric_eval_timestamp
         self.recall = recall
         self.spec = spec
         self.models_json = opjoin(nn_models_dir, MODELS_JSON)
-        self.model_file_name = None
+        self.model_file_name = model_file_name
 
 
     def save(self, model):
