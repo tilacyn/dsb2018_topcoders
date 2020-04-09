@@ -20,16 +20,13 @@ class Test:
 
     def calculate_metrics_for_model(self, model, batches):
         dice_coefficients = []
-        confusion_matrix = np.zeros([2, 2])
-        for batch in batches:
-            x, y = batch
-            pred = model.predict(x, batch_size=16)
-            for i in range(len(pred)):
-                expected = np.reshape(y[i], (256, 256))
-                actual = np.reshape(pred[i], (256, 256))
-                actual = actual > actual.max() * 0.8
-                dice_coefficients.append(dice(expected, actual))
-        return np.mean(dice_coefficients)
+        for i in range(number_to_show):
+            image, image_parts = x[i]
+            mask, mask_parts = y[i]
+            pred_parts = model.predict(image_parts, batch_size=len(image_parts))
+            pred_parts = pred_parts.reshape(16, 16, 256, 256).swapaxes(1, 2).reshape(16 * 256, 16 * 256)
+            pred_parts = cv2.resize(pred_parts, (256, 256))
+            show(image, mask, pred_parts, self.predict_threshold)
 
     def calculate_metrics_for_td(self, td, batches):
         if td.metric_eval_timestamp != 'None':

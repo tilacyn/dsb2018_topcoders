@@ -19,11 +19,13 @@ TRAIN_FINISH_TIMESTAMP = 'Training Finished at'
 METRIC_EVAL_TIMESTAMP = 'Metrics Calculated at'
 MODEL_FILE_NAME = 'Model Filename'
 MODELS_JSON = 'models.json'
+DICE_COEFFICIENT = 'Dice Coefficient'
 
 
 class TrainData:
     def __init__(self, model_name, epochs, loss, loss_value, val_ds_len, val_steps, grid_size, nn_models_dir,
-                 train_finish_timestamp=None, metric_eval_timestamp=None, recall=None, spec=None, model_file_name=None):
+                 train_finish_timestamp=None, metric_eval_timestamp=None, recall=None, spec=None,
+                 dice_coefficient=None, model_file_name=None):
         self.model_name = model_name
         self.epochs = epochs
         self.loss = loss
@@ -39,9 +41,9 @@ class TrainData:
         self.metric_eval_timestamp = metric_eval_timestamp
         self.recall = recall
         self.spec = spec
+        self.dice_coefficient = dice_coefficient
         self.models_json = opjoin(nn_models_dir, MODELS_JSON)
         self.model_file_name = model_file_name
-
 
     def save(self, model):
         random_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
@@ -58,9 +60,10 @@ class TrainData:
         with open(opjoin(self.nn_models_dir, MODELS_JSON), "w") as write_file:
             json.dump(records, write_file, indent=1)
 
-    def add_metrics(self, recall=None, spec=None):
+    def add_metrics(self, recall=None, spec=None, dice=None):
         self.recall = recall
         self.spec = spec
+        self.dice_coefficient = dice
         self.metric_eval_timestamp = datetime.datetime.now()
 
     def to_dict(self):
@@ -74,6 +77,7 @@ class TrainData:
             GRID_SIZE: self.grid_size,
             RECALL: self.recall,
             SPEC: self.spec,
+            DICE_COEFFICIENT: self.dice_coefficient,
             TRAIN_FINISH_TIMESTAMP: str(self.train_finish_timestamp),
             METRIC_EVAL_TIMESTAMP: str(self.metric_eval_timestamp),
             MODEL_FILE_NAME: self.model_file_name
@@ -81,7 +85,6 @@ class TrainData:
 
 
 def from_dict(d, nn_models_dir):
-    return TrainData(d[MODEL_NAME], d[EPOCHS], d[LOSS], d[LOSS_VALUE], d[VAL_DS_LEN], d[VAL_STEPS], d[GRID_SIZE], nn_models_dir,
-                     d[TRAIN_FINISH_TIMESTAMP], d[METRIC_EVAL_TIMESTAMP], d[RECALL], d[SPEC], d[MODEL_FILE_NAME])
-
-
+    return TrainData(d[MODEL_NAME], d[EPOCHS], d[LOSS], d[LOSS_VALUE], d[VAL_DS_LEN], d[VAL_STEPS], d[GRID_SIZE],
+                     nn_models_dir,
+                     d[TRAIN_FINISH_TIMESTAMP], d[METRIC_EVAL_TIMESTAMP], d[RECALL], d[SPEC], d[DICE_COEFFICIENT], d[MODEL_FILE_NAME])
