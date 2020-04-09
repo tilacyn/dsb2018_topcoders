@@ -85,6 +85,14 @@ class TrainData:
 
 
 def from_dict(d, nn_models_dir):
+
     return TrainData(d[MODEL_NAME], d[EPOCHS], d[LOSS], d[LOSS_VALUE], d[VAL_DS_LEN], d[VAL_STEPS], d[GRID_SIZE],
                      nn_models_dir,
-                     d[TRAIN_FINISH_TIMESTAMP], d[METRIC_EVAL_TIMESTAMP], d[RECALL], d[SPEC], d[DICE_COEFFICIENT], d[MODEL_FILE_NAME])
+                     d[TRAIN_FINISH_TIMESTAMP], d[METRIC_EVAL_TIMESTAMP], d[RECALL], d[SPEC], safe_get(d, DICE_COEFFICIENT), d[MODEL_FILE_NAME])
+
+
+def safe_get(d, key):
+    if key in d:
+        return d[key]
+    else:
+        return None
