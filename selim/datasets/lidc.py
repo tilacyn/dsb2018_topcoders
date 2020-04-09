@@ -173,6 +173,40 @@ class LIDCDatasetIterator(Iterator):
 
         return self.generator(index_inc_function, self.val_index_list)
 
+    def test_generator(self):
+        def index_inc_function():
+            prev = self.train_i
+            self.train_i += self.batch_size // 2
+            if self.train_i >= len(self.train_index_list):
+                np.random.shuffle(self.train_index_list)
+                prev = 0
+                self.train_i = self.batch_size // 2
+            return prev, self.train_i
+        index_list = self.train_index_list
+        def gen():
+            while 1:
+                batch_x = []
+                batch_y = []
+                index, next_index = index_inc_function()
+                index_array = index_list[index: next_index]
+                for image_index in index_array:
+                    file_name, parent_name = self.image_ids[image_index]
+                    image, dcm_ds = imread(file_name)
+                    image = self.pad_if_need(image)
+                    nodules = parseXML(parent_name)
+                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+                    image_parts, mask_parts = self.split_for_test(image, mask)
+                    image_parts = [self.preprocess_x(image_part) for image_part in image_parts]
+                    mask_parts = [self.preprocess_y(mask_part) for mask_part in mask_parts]
+                    batch_x.append((image, image_parts))
+                    batch_y.append((mask, mask_parts))
+                batch_x = np.array(batch_x, dtype=np.uint8)
+                batch_y = np.array(batch_y, dtype=np.uint8)
+                yield batch_x, batch_y
+
+        return gen
+
+
     def generator(self, index_inc_function, index_list):
         def gen():
             while 1:
@@ -183,30 +217,15 @@ class LIDCDatasetIterator(Iterator):
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
-                    h, w = image.shape
-                    if 2022 == h or 2022 == w:
-                        hpad = (2048 - h) // 2
-                        wpad = (2048 - w) // 2
-                        image = np.pad(image, ((hpad, hpad),  (wpad, wpad)), constant_values=0)
+                    image = self.pad_if_need(image)
                     nodules = parseXML(parent_name)
                     mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
                     image_parts, mask_parts = self.split(image, mask)
                     for i in range(2):
                         image = image_parts[i]
+                        image = self.preprocess_x(image)
                         mask = mask_parts[i]
-                        # cv2.imwrite(dcm_ds.SOPInstanceUID + '.png', mask * 255)
-                        if mask.max() != 0:
-                            self.non_zero_masks += 1
-                        self.all_masks += 1
-                        # print('non zero masks percentage: {}'.format(self.non_zero_masks / self.all_masks))
-                        # zeros = np.zeros([image.shape[0], image.shape[1]])
-                        # image = [image, zeros, zeros]
-                        # image = np.swapaxes(image, 0, 2)
-                        image = np.reshape(image, (image.shape[0], image.shape[1], 1))
-                        image = np.repeat(image, 3, axis=2)
-                        image = cv2.resize(image, self.data_shape)
-                        mask = cv2.resize(mask, self.data_shape)
-                        mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
+                        mask = self.preprocess_y(mask)
                         batch_x.append(image)
                         batch_y.append(mask)
                 batch_x = np.array(batch_x, dtype=np.uint8)
@@ -214,6 +233,25 @@ class LIDCDatasetIterator(Iterator):
                 yield batch_x, batch_y
 
         return gen
+
+    def pad_if_need(self, image):
+        h, w = image.shape
+        if 2022 == h or 2022 == w:
+            hpad = (2048 - h) // 2
+            wpad = (2048 - w) // 2
+            image = np.pad(image, ((hpad, hpad), (wpad, wpad)), constant_values=0)
+        return image
+
+    def preprocess_x(self, image):
+        image = np.reshape(image, (image.shape[0], image.shape[1], 1))
+        image = np.repeat(image, 3, axis=2)
+        image = cv2.resize(image, self.data_shape)
+        return image
+
+    def preprocess_y(self, mask):
+        mask = cv2.resize(mask, self.data_shape)
+        mask = np.reshape(mask, (self.data_shape[0], self.data_shape[1], 1))
+        return mask
 
     def split(self, image, mask):
         if self.grid_size == 1:
@@ -225,10 +263,16 @@ class LIDCDatasetIterator(Iterator):
         max_part_idx = np.argmax([np.count_nonzero(part > 0) for part in mask_parts])
         max_mask = mask_parts[max_part_idx]
         random_idx = np.random.randint(self.grid_size * self.grid_size)
-
-        # print('non_zero values in mask: {}'.format(np.count_nonzero(max_mask > 0) / max_mask.size))
-
         return [image_parts[max_part_idx], image_parts[random_idx]], [max_mask, mask[random_idx]]
+
+    def split_for_test(self, image, mask):
+        if self.grid_size == 1:
+            return [image, image], [mask, mask]
+        h, w = image.shape
+        gs = h // self.grid_size
+        image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        return image_parts, mask_parts
 
     def create_image_ids(self):
         with open("index.json", "r") as read_file:
