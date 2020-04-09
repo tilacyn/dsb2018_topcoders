@@ -198,6 +198,8 @@ class LIDCDatasetIterator(Iterator):
                     image_parts, mask_parts = self.split_for_test(image, mask)
                     image_parts = [self.preprocess_x(image_part) for image_part in image_parts]
                     mask_parts = [self.preprocess_y(mask_part) for mask_part in mask_parts]
+                    image = self.preprocess_x(image)
+                    mask = self.preprocess_x(mask)
                     batch_x.append((image, image_parts))
                     batch_y.append((mask, mask_parts))
                 # batch_x = np.array(batch_x, dtype=np.uint8)
