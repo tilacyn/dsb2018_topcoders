@@ -125,7 +125,7 @@ def parseXML(scan_path):
 
 
 class LIDCDatasetIterator(Iterator):
-    def __init__(self, image_dir, batch_size, val_len, data_shape=(64, 64), grid_size=1, parts_number_to_include=1):
+    def __init__(self, image_dir, batch_size, val_len, test_len=0, data_shape=(64, 64), grid_size=1):
         seed = np.uint32(time.time() * 1000)
         self.image_dir = image_dir
         self.image_ids = self.create_image_ids()
@@ -134,14 +134,11 @@ class LIDCDatasetIterator(Iterator):
         self.train_index_list = np.arange(n)
         np.random.shuffle(self.train_index_list)
         self.val_index_list = self.train_index_list[:val_len]
-        self.train_index_list = self.train_index_list[val_len:]
+        self.test_index_list = self.train_index_list[val_len:test_len]
+        self.train_index_list = self.train_index_list[val_len + test_len:]
         self.val_i = 0
         self.train_i = 0
         self.grid_size = grid_size
-        self.parts_number_to_include = parts_number_to_include
-
-        self.non_zero_masks = 0
-        self.all_masks = 0
 
         self.data_shape = data_shape
         print("total len: {}".format(n))
@@ -172,42 +169,6 @@ class LIDCDatasetIterator(Iterator):
             return prev, self.val_i
 
         return self.generator(index_inc_function, self.val_index_list)
-
-    def test_generator(self):
-        def index_inc_function():
-            prev = self.train_i
-            self.train_i += self.batch_size // 2
-            if self.train_i >= len(self.train_index_list):
-                np.random.shuffle(self.train_index_list)
-                prev = 0
-                self.train_i = self.batch_size // 2
-            return prev, self.train_i
-        index_list = self.train_index_list
-        def gen():
-            while 1:
-                batch_x = []
-                batch_y = []
-                index, next_index = index_inc_function()
-                index_array = index_list[index: next_index]
-                for image_index in index_array:
-                    file_name, parent_name = self.image_ids[image_index]
-                    image, dcm_ds = imread(file_name)
-                    image = self.pad_if_need(image)
-                    nodules = parseXML(parent_name)
-                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
-                    image_parts, mask_parts = self.split_for_test(image, mask)
-                    image_parts = [self.preprocess_x(image_part) for image_part in image_parts]
-                    mask_parts = [self.preprocess_y(mask_part) for mask_part in mask_parts]
-                    image = self.preprocess_x(image)
-                    mask = self.preprocess_y(mask)
-                    batch_x.append((image, image_parts))
-                    batch_y.append((mask, mask_parts))
-                # batch_x = np.array(batch_x, dtype=np.uint8)
-                # batch_y = np.array(batch_y, dtype=np.uint8)
-                yield batch_x, batch_y
-
-        return gen
-
 
     def generator(self, index_inc_function, index_list):
         def gen():
@@ -267,20 +228,11 @@ class LIDCDatasetIterator(Iterator):
         random_idx = np.random.randint(self.grid_size * self.grid_size)
         return [image_parts[max_part_idx], image_parts[random_idx]], [max_mask, mask[random_idx]]
 
-    def split_for_test(self, image, mask):
-        if self.grid_size == 1:
-            return [image, image], [mask, mask]
-        h, w = image.shape
-        gs = h // self.grid_size
-        image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
-        mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
-        return image_parts, mask_parts
-
     def create_image_ids(self):
         with open("index.json", "r") as read_file:
             dcms = json.load(read_file)
         image_ids = {}
-        print('total training ds len: {}'.format(len(dcms)))
+        # print('total training ds len: {}'.format(len(dcms)))
         for i, dcm in enumerate(dcms):
             image_ids[i] = dcm, '/'.join(dcm.split('/')[:-1])
         return image_ids
@@ -301,3 +253,52 @@ def create_index(image_dir):
     print('total training ds len: {}'.format(len(dcms)))
     with open("index.json", "w") as write_file:
         json.dump(dcms, write_file)
+
+class LIDCTestDatasetIterator(LIDCDatasetIterator):
+    def __init__(self, image_dir, batch_size, test_index_list, val_len, data_shape=(64, 64), grid_size=1):
+        super().__init__(image_dir, batch_size, 0, data_shape=data_shape, grid_size=grid_size)
+        self.test_index_list = test_index_list
+        self.test_i = 0
+
+    def split_for_test(self, image, mask):
+        if self.grid_size == 1:
+            return [image, image], [mask, mask]
+        h, w = image.shape
+        gs = h // self.grid_size
+        image_parts = image.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        mask_parts = mask.reshape(h // gs, gs, -1, gs).swapaxes(1, 2).reshape(-1, gs, gs)
+        return image_parts, mask_parts
+
+    def test_generator(self):
+        def index_inc_function():
+            prev = self.test_i
+            self.test_i += self.batch_size
+            if self.test_i >= len(self.test_index_list):
+                np.random.shuffle(self.test_index_list)
+                prev = 0
+                self.test_i = self.batch_size
+            return prev, self.test_i
+        index_list = self.test_index_list
+        def gen():
+            while 1:
+                batch_x = []
+                batch_y = []
+                index, next_index = index_inc_function()
+                index_array = index_list[index: next_index]
+                for image_index in index_array:
+                    file_name, parent_name = self.image_ids[image_index]
+                    image, dcm_ds = imread(file_name)
+                    image = self.pad_if_need(image)
+                    nodules = parseXML(parent_name)
+                    mask = make_mask(image, dcm_ds.SOPInstanceUID, nodules)
+                    image_parts, mask_parts = self.split_for_test(image, mask)
+                    image_parts = [self.preprocess_x(image_part) for image_part in image_parts]
+                    mask_parts = [self.preprocess_y(mask_part) for mask_part in mask_parts]
+                    image = self.preprocess_x(image)
+                    mask = self.preprocess_y(mask)
+                    batch_x.append((image, image_parts))
+                    batch_y.append((mask, mask_parts))
+                yield batch_x, batch_y
+
+        return gen
+
