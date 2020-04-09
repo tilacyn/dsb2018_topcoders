@@ -200,8 +200,8 @@ class LIDCDatasetIterator(Iterator):
                     mask_parts = [self.preprocess_y(mask_part) for mask_part in mask_parts]
                     batch_x.append((image, image_parts))
                     batch_y.append((mask, mask_parts))
-                batch_x = np.array(batch_x, dtype=np.uint8)
-                batch_y = np.array(batch_y, dtype=np.uint8)
+                # batch_x = np.array(batch_x, dtype=np.uint8)
+                # batch_y = np.array(batch_y, dtype=np.uint8)
                 yield batch_x, batch_y
 
         return gen
