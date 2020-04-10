@@ -28,7 +28,7 @@ models_json_file = opjoin(nn_models_dir, MODELS_JSON)
 
 class TrainData:
     def __init__(self, model_name, epochs, loss, loss_value, val_ds_len, val_steps, grid_size, test_index_list,
-                 test_index_list_file,
+                 test_index_list_file=None,
                  train_finish_timestamp=None, metric_eval_timestamp=None, recall=None, spec=None,
                  dice_coefficient=None, model_file_name=None):
         self.model_name = model_name
