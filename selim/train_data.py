@@ -93,7 +93,8 @@ class TrainData:
             DICE_COEFFICIENT: self.dice_coefficient,
             TRAIN_FINISH_TIMESTAMP: str(self.train_finish_timestamp),
             METRIC_EVAL_TIMESTAMP: str(self.metric_eval_timestamp),
-            MODEL_FILE_NAME: self.model_file_name
+            MODEL_FILE_NAME: self.model_file_name,
+            TEST_INDEX_LIST_FILE : self.test_index_list_file
         }
 
     def load_test_index_list(self):
