@@ -278,6 +278,8 @@ class LIDCTestDatasetIterator(LIDCDatasetIterator):
             else:
                 extension = [(dcm, root) for dcm in files if dcm.endswith('dcm')]
                 self.all_images.extend(extension)
+            if len(self.all_images) > 10000:
+                break
 
     def split_for_test(self, image, mask):
         if self.grid_size == 1:
