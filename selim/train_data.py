@@ -104,6 +104,7 @@ class TrainData:
     def create_test_index_list_file(self):
         random_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
         file_name = 'test_index_{}.json'.format(random_string)
+        self.test_index_list_file = file_name
         with open(opjoin(nn_models_dir, file_name), "w") as write_file:
             self.test_index_list = json.dump(self.test_index_list, write_file)
 
