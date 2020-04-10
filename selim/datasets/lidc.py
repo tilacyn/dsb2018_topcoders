@@ -285,6 +285,7 @@ class LIDCTestDatasetIterator(LIDCDatasetIterator):
                 batch_y = []
                 index, next_index = index_inc_function()
                 index_array = index_list[index: next_index]
+                print(index_array)
                 for image_index in index_array:
                     file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
