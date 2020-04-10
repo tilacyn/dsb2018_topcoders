@@ -99,7 +99,8 @@ class TrainData:
 
     def load_test_index_list(self):
         with open(opjoin(nn_models_dir, self.test_index_list_file), "r") as read_file:
-            self.test_index_list = json.load(read_file)
+            result = json.load(read_file)
+        return result
 
     def create_test_index_list_file(self):
         random_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
