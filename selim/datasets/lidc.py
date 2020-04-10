@@ -316,6 +316,7 @@ class LIDCTestDatasetIterator(LIDCDatasetIterator):
                     if image_index == -1:
                         ii = np.random.randint(1e4)
                         file_name, parent_name = self.all_images[ii]
+                        file_name = opjoin(parent_name, file_name)
                     else:
                         file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
