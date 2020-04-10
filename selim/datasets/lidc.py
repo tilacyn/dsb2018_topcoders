@@ -254,11 +254,30 @@ def create_index(image_dir):
     with open("index.json", "w") as write_file:
         json.dump(dcms, write_file)
 
+
+
 class LIDCTestDatasetIterator(LIDCDatasetIterator):
     def __init__(self, image_dir, batch_size, test_index_list, val_len, data_shape=(64, 64), grid_size=1):
         super().__init__(image_dir, batch_size, 0, data_shape=data_shape, grid_size=grid_size)
         self.test_index_list = test_index_list
         self.test_i = 0
+        self.all_images = []
+        self.create_negative()
+        self.batch_size /= 2
+
+
+    def create_negative(self):
+        for root, folders, files in tqdm(os.walk(self.image_dir)):
+            xml_file = None
+            for file in files:
+                if 'xml' in file:
+                    xml_file = file
+                    break
+            if xml_file is None:
+                continue
+            else:
+                extension = [(dcm, root) for dcm in files if dcm.endswith('dcm')]
+                self.all_images.extend(extension)
 
     def split_for_test(self, image, mask):
         if self.grid_size == 1:
@@ -286,8 +305,16 @@ class LIDCTestDatasetIterator(LIDCDatasetIterator):
                 index, next_index = index_inc_function()
                 index_array = index_list[index: next_index]
                 print(index_array)
+                new_index_array = []
+                for i in index_array:
+                    new_index_array.append(i)
+                    new_index_array.append(-1)
+                index_array = new_index_array
                 for image_index in index_array:
-                    file_name, parent_name = self.image_ids[image_index]
+                    if image_index == -1:
+                        file_name, parent_name = np.random.choice(self.all_images)
+                    else:
+                        file_name, parent_name = self.image_ids[image_index]
                     image, dcm_ds = imread(file_name)
                     image = self.pad_if_need(image)
                     nodules = parseXML(parent_name)
