@@ -134,7 +134,7 @@ class LIDCDatasetIterator(Iterator):
         self.train_index_list = np.arange(n)
         np.random.shuffle(self.train_index_list)
         self.val_index_list = self.train_index_list[:val_len]
-        self.test_index_list = self.train_index_list[val_len:test_len]
+        self.test_index_list = self.train_index_list[val_len:val_len + test_len]
         self.train_index_list = self.train_index_list[val_len + test_len:]
         self.val_i = 0
         self.train_i = 0
