@@ -263,7 +263,7 @@ class LIDCTestDatasetIterator(LIDCDatasetIterator):
         self.test_i = 0
         self.all_images = []
         self.create_negative()
-        self.batch_size /= 2
+        self.batch_size //= 2
 
 
     def create_negative(self):
